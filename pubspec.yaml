@@ -1,5 +1,5 @@
 name: bytestreak
-description: "A new Flutter project."
+description: "ByteStreak — a Duolingo-style desktop app for LeetCode / DSA practice."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -34,6 +34,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  go_router: ^18.0.2
+  flutter_riverpod: ^3.4.3
+  fl_chart: ^1.2.0
+  flutter_animate: ^4.5.2
+  window_manager: ^0.5.2
+  re_editor: ^0.10.0
+  re_highlight: ^0.0.3
+  share_plus: ^13.3.1
+  file_selector: ^1.1.0
+  pasteboard: ^0.5.0
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +67,17 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:
