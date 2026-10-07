@@ -54,9 +54,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
     await ref.read(servicesProvider).auth.sendPasswordReset(id);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('If an account matches "$id", a reset link is on its way.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('If an account matches "$id", a reset link is on its way.')));
   }
 
   @override
@@ -127,7 +127,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               if (hint != null) ...[
                 const SizedBox(height: 12),
-                Text(hint, style: context.text.bodySmall?.copyWith(color: p.faint), textAlign: TextAlign.center),
+                Text(
+                  hint,
+                  style: context.text.bodySmall?.copyWith(color: p.faint),
+                  textAlign: TextAlign.center,
+                ),
               ],
               const SizedBox(height: 24),
               Row(

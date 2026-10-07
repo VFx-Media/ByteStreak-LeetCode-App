@@ -37,43 +37,43 @@ class OnboardingScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 36),
-          Row(
-            children: [
-              for (final (icon, tone, title, blurb) in _features) ...[
-                if (title != _features.first.$3) const SizedBox(width: 16),
-                Expanded(
-                  child: AppCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(color: tone.soft(p), shape: BoxShape.circle),
-                          child: Icon(icon, color: tone.strong(p), size: 22),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(title, style: context.text.titleSmall, textAlign: TextAlign.center),
-                        const SizedBox(height: 4),
-                        Text(
-                          blurb,
-                          style: context.text.bodySmall?.copyWith(color: p.muted),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (icon, tone, title, blurb) in _features) ...[
+                  if (title != _features.first.$3) const SizedBox(width: 16),
+                  Expanded(
+                    child: AppCard(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(color: tone.soft(p), shape: BoxShape.circle),
+                            child: Icon(icon, color: tone.strong(p), size: 22),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(title, style: context.text.titleSmall, textAlign: TextAlign.center),
+                          const SizedBox(height: 4),
+                          Text(
+                            blurb,
+                            style: context.text.bodySmall?.copyWith(color: p.muted),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
           const SizedBox(height: 36),
           SizedBox(
             width: 320,
-            child: FilledButton(
-              onPressed: () => context.go('/signup'),
-              child: const Text('Get Started'),
-            ),
+            child: FilledButton(onPressed: () => context.go('/signup'), child: const Text('Get Started')),
           ),
           const SizedBox(height: 10),
           TextButton(

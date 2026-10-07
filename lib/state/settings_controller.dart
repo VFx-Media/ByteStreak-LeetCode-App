@@ -31,8 +31,8 @@ class SettingsController extends Notifier<AppSettings> {
 
 extension ThemePreferenceMode on ThemePreference {
   ThemeMode get mode => switch (this) {
-        ThemePreference.light => ThemeMode.light,
-        ThemePreference.dark => ThemeMode.dark,
-        ThemePreference.system => ThemeMode.system,
-      };
+    ThemePreference.light => ThemeMode.light,
+    ThemePreference.dark => ThemeMode.dark,
+    ThemePreference.system => ThemeMode.system,
+  };
 }

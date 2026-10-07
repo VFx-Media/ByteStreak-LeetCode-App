@@ -37,7 +37,9 @@ class QuizIntroScreen extends ConsumerWidget {
     final chapter = path.chapterOfLesson(lessonId);
     if (lesson == null || chapter == null) {
       return Scaffold(
-        body: Center(child: FilledButton(onPressed: () => context.go('/home'), child: const Text('Back to home'))),
+        body: Center(
+          child: FilledButton(onPressed: () => context.go('/home'), child: const Text('Back to home')),
+        ),
       );
     }
     final i = path.chapters.indexOf(chapter);
@@ -73,7 +75,11 @@ class QuizIntroScreen extends ConsumerWidget {
                         child: Icon(Icons.star_rounded, color: p.quiz, size: 42),
                       ),
                       const SizedBox(height: 18),
-                      Text('${chapter.title} — Chapter quiz', style: context.text.headlineSmall, textAlign: TextAlign.center),
+                      Text(
+                        '${chapter.title} — Chapter quiz',
+                        style: context.text.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         next == null
@@ -85,11 +91,17 @@ class QuizIntroScreen extends ConsumerWidget {
                       const SizedBox(height: 22),
                       Row(
                         children: [
-                          Expanded(child: _Fact(value: '$count', label: 'questions')),
+                          Expanded(
+                            child: _Fact(value: '$count', label: 'questions'),
+                          ),
                           const SizedBox(width: 12),
-                          Expanded(child: _Fact(value: '~${(count * 0.8).ceil()} min', label: 'estimated')),
+                          Expanded(
+                            child: _Fact(value: '~${(count * 0.8).ceil()} min', label: 'estimated'),
+                          ),
                           const SizedBox(width: 12),
-                          Expanded(child: _Fact(value: '${(GameRules.quizPassMark * 100).round()}%', label: 'to pass')),
+                          Expanded(
+                            child: _Fact(value: '${(GameRules.quizPassMark * 100).round()}%', label: 'to pass'),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 18),

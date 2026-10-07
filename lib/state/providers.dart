@@ -37,9 +37,10 @@ class AppServices {
     DateTime Function()? clock,
     Duration latency = Duration.zero,
     bool signedIn = false,
+    AppSettings settings = const AppSettings(),
   }) {
     final now = clock ?? DateTime.now;
-    final backend = FakeBackend(clock: now, path: buildSamplePath(), latency: latency);
+    final backend = FakeBackend(clock: now, path: buildSamplePath(), latency: latency)..settings = settings;
     if (signedIn) backend.session = const AuthSession(userId: demoUserId, email: demoEmail);
     return AppServices(
       content: FakeContentRepository(),
@@ -90,8 +91,23 @@ final clockProvider = Provider<DateTime Function()>((ref) => ref.watch(servicesP
 
 final settingsProvider = NotifierProvider<SettingsController, AppSettings>(SettingsController.new);
 
-/// The signed-in player, or null when signed out.
+/// The player's data: null before anyone has signed in.
+///
+/// Signing out flips [signedInProvider] but leaves this in place until the
+/// next sign-in replaces it. Clearing it straight away would crash any screen
+/// still on display for the frame before the router moves to /welcome.
 final playerProvider = NotifierProvider<PlayerController, PlayerState?>(PlayerController.new);
+
+/// Whether someone is signed in. The router watches this to decide which
+/// screens are reachable.
+final signedInProvider = NotifierProvider<SignedIn, bool>(SignedIn.new);
+
+class SignedIn extends Notifier<bool> {
+  @override
+  bool build() => ref.read(initialPlayerProvider) != null;
+
+  void set(bool value) => state = value;
+}
 
 /// The player, for screens that are only reachable when signed in.
 final currentPlayerProvider = Provider<PlayerState>((ref) {
@@ -112,7 +128,10 @@ final achievementDefsProvider = Provider<List<AchievementDef>>((ref) {
 final leaderboardProvider = FutureProvider<LeaderboardPage>((ref) async {
   final player = ref.watch(currentPlayerProvider);
   final shareStats = ref.watch(settingsProvider.select((s) => s.shareStats));
-  return ref.watch(servicesProvider).leaderboard.fetch(
+  return ref
+      .watch(servicesProvider)
+      .leaderboard
+      .fetch(
         userId: player.profile.userId,
         username: player.profile.username,
         avatarIndex: player.profile.avatarIndex,

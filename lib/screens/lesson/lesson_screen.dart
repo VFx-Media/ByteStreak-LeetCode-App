@@ -113,12 +113,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     final q = s.current;
     if (q is! CodingQuestion || _running || _outcome != null) return;
     setState(() => _running = true);
-    final result = await ref.read(servicesProvider).codeRunner.run(
-          question: q,
-          language: _language,
-          code: _code!.text,
-          includeHidden: submit,
-        );
+    final result = await ref
+        .read(servicesProvider)
+        .codeRunner
+        .run(question: q, language: _language, code: _code!.text, includeHidden: submit);
     if (!mounted) return;
     setState(() {
       _running = false;
@@ -203,9 +201,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Quit this lesson?'),
-          content: const Text(
-            'XP you have already earned stays, but the lesson won\'t count as finished.',
-          ),
+          content: const Text('XP you have already earned stays, but the lesson won\'t count as finished.'),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep going')),
             FilledButton(
@@ -273,28 +269,28 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               Expanded(
                 child: switch (q) {
                   McqQuestion() => McqView(
-                      question: q,
-                      index: s.index,
-                      total: s.questions.length,
-                      selected: _selected,
-                      revealed: _outcome != null,
-                      onSelect: (i) => setState(() => _selected = i),
-                    ),
+                    question: q,
+                    index: s.index,
+                    total: s.questions.length,
+                    selected: _selected,
+                    revealed: _outcome != null,
+                    onSelect: (i) => setState(() => _selected = i),
+                  ),
                   CodingQuestion() => CodeView(
-                      question: q,
-                      controller: _code!,
-                      language: _language,
-                      onLanguage: _changeLanguage,
-                      run: _run,
-                      running: _running,
-                      locked: _outcome != null,
-                      onRun: () => _runCode(submit: false),
-                      onSubmit: () => _runCode(submit: true),
-                      onHint: () => _openHints(),
-                      onSolution: () => _openHints(solution: true),
-                      hintCost: ref.read(playerProvider.notifier).hintCost(widget.mode),
-                      hintsLeft: hintsLeft,
-                    ),
+                    question: q,
+                    controller: _code!,
+                    language: _language,
+                    onLanguage: _changeLanguage,
+                    run: _run,
+                    running: _running,
+                    locked: _outcome != null,
+                    onRun: () => _runCode(submit: false),
+                    onSubmit: () => _runCode(submit: true),
+                    onHint: () => _openHints(),
+                    onSolution: () => _openHints(solution: true),
+                    hintCost: ref.read(playerProvider.notifier).hintCost(widget.mode),
+                    hintsLeft: hintsLeft,
+                  ),
                 },
               ),
               if (_outcome != null)
@@ -351,8 +347,8 @@ class _Header extends StatelessWidget {
                         color: i < session.outcomes.length
                             ? (session.outcomes[i].correct ? p.success : p.heart)
                             : i == session.index
-                                ? p.streak
-                                : p.sunken,
+                            ? p.streak
+                            : p.sunken,
                       ),
                     ),
                   ),
@@ -405,7 +401,9 @@ class _McqFooter extends StatelessWidget {
     final p = context.palette;
     return Container(
       height: 92,
-      decoration: BoxDecoration(border: Border(top: BorderSide(color: p.line))),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: p.line)),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Center(
         child: ConstrainedBox(
@@ -488,13 +486,17 @@ class _FeedbackBar extends StatelessWidget {
       };
     } else {
       title = switch (q) {
-        CodingQuestion() => run?.error != null ? 'Your code didn\'t run' : '${run?.passed ?? 0} of ${run?.results.length ?? 0} tests passed',
+        CodingQuestion() =>
+          run?.error != null
+              ? 'Your code didn\'t run'
+              : '${run?.passed ?? 0} of ${run?.results.length ?? 0} tests passed',
         McqQuestion() => 'Not quite',
       };
     }
 
     final details = <String>[
-      if (!good && q is McqQuestion) 'Answer: ${String.fromCharCode(65 + q.correctIndex)}. ${q.options[q.correctIndex]} — ${q.solution}',
+      if (!good && q is McqQuestion)
+        'Answer: ${String.fromCharCode(65 + q.correctIndex)}. ${q.options[q.correctIndex]} — ${q.solution}',
       if (good && q is McqQuestion) q.solution,
       if (!good && q is CodingQuestion) 'It\'ll be waiting in Review mistakes at the end.',
     ];
@@ -502,8 +504,8 @@ class _FeedbackBar extends StatelessWidget {
     final reward = !mode.awardsXp
         ? null
         : outcome.correct
-            ? (outcome.xpAwarded > 0 ? '+${outcome.xpAwarded} XP' : '+0 XP · solution viewed')
-            : (outcome.heartLost ? '−1 heart' : null);
+        ? (outcome.xpAwarded > 0 ? '+${outcome.xpAwarded} XP' : '+0 XP · solution viewed')
+        : (outcome.heartLost ? '−1 heart' : null);
 
     return Container(
       decoration: BoxDecoration(

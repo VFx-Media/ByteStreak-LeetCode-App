@@ -8,33 +8,33 @@ import 'package:bytestreak/widgets/common.dart';
 import 'package:bytestreak/widgets/select_card.dart';
 
 IconData badgeIcon(String key) => switch (key) {
-      'flame' => Icons.local_fire_department_rounded,
-      'grid' => Icons.grid_view_rounded,
-      'key' => Icons.vpn_key_rounded,
-      'pointers' => Icons.compare_arrows_rounded,
-      'tree' => Icons.account_tree_rounded,
-      'graph' => Icons.hub_rounded,
-      'brain' => Icons.psychology_rounded,
-      'bolt' => Icons.bolt_rounded,
-      'target' => Icons.gps_fixed_rounded,
-      'trophy' => Icons.emoji_events_rounded,
-      'moon' => Icons.nightlight_round,
-      _ => Icons.military_tech_rounded,
-    };
+  'flame' => Icons.local_fire_department_rounded,
+  'grid' => Icons.grid_view_rounded,
+  'key' => Icons.vpn_key_rounded,
+  'pointers' => Icons.compare_arrows_rounded,
+  'tree' => Icons.account_tree_rounded,
+  'graph' => Icons.hub_rounded,
+  'brain' => Icons.psychology_rounded,
+  'bolt' => Icons.bolt_rounded,
+  'target' => Icons.gps_fixed_rounded,
+  'trophy' => Icons.emoji_events_rounded,
+  'moon' => Icons.nightlight_round,
+  _ => Icons.military_tech_rounded,
+};
 
 Tone badgeTone(AchievementCategory c) => switch (c) {
-      AchievementCategory.streaks => Tone.streak,
-      AchievementCategory.mastery => Tone.success,
-      AchievementCategory.milestones => Tone.quiz,
-    };
+  AchievementCategory.streaks => Tone.streak,
+  AchievementCategory.mastery => Tone.success,
+  AchievementCategory.milestones => Tone.quiz,
+};
 
 /// Builds the context achievements are measured against.
 AchievementContext achievementContext(WidgetRef ref) => AchievementContext(
-      player: ref.watch(currentPlayerProvider),
-      path: ref.watch(coursePathProvider),
-      now: ref.watch(clockProvider)(),
-      rank: ref.watch(leaderboardProvider).value?.myRank,
-    );
+  player: ref.watch(currentPlayerProvider),
+  path: ref.watch(coursePathProvider),
+  now: ref.watch(clockProvider)(),
+  rank: ref.watch(leaderboardProvider).value?.myRank,
+);
 
 enum _Filter { all, earned, locked }
 
@@ -58,10 +58,10 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
     final earned = defs.where((d) => player.achievements.containsKey(d.id)).length;
 
     bool show(AchievementDef d) => switch (_filter) {
-          _Filter.all => true,
-          _Filter.earned => player.achievements.containsKey(d.id),
-          _Filter.locked => !player.achievements.containsKey(d.id),
-        };
+      _Filter.all => true,
+      _Filter.earned => player.achievements.containsKey(d.id),
+      _Filter.locked => !player.achievements.containsKey(d.id),
+    };
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -77,7 +77,11 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
               for (final f in _Filter.values) ...[
                 const SizedBox(width: 8),
                 ToggleChip(
-                  label: switch (f) { _Filter.all => 'All', _Filter.earned => 'Earned', _Filter.locked => 'Locked' },
+                  label: switch (f) {
+                    _Filter.all => 'All',
+                    _Filter.earned => 'Earned',
+                    _Filter.locked => 'Locked',
+                  },
                   selected: _filter == f,
                   onTap: () => setState(() => _filter = f),
                 ),
@@ -132,10 +136,16 @@ class _BadgeCard extends StatelessWidget {
       scale: 1.02,
       child: Material(
         color: p.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: p.line)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: p.line),
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () => showDialog<void>(context: context, builder: (_) => BadgeDetailDialog(def: def)),
+          onTap: () => showDialog<void>(
+            context: context,
+            builder: (_) => BadgeDetailDialog(def: def),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -164,7 +174,9 @@ class _BadgeCard extends StatelessWidget {
                 else
                   Row(
                     children: [
-                      Expanded(child: ProgressBar(value: progress / def.target, height: 6, color: p.faint)),
+                      Expanded(
+                        child: ProgressBar(value: progress / def.target, height: 6, color: p.faint),
+                      ),
                       const SizedBox(width: 8),
                       Text('$progress/${def.target}', style: context.text.labelSmall?.copyWith(color: p.faint)),
                     ],

@@ -42,11 +42,8 @@ class AnswerOutcome {
 /// moves forward, but never touches hearts or XP itself; the PlayerController
 /// applies those so there is a single place that changes player data.
 class LessonSession {
-  LessonSession({
-    required this.mode,
-    required this.questions,
-    this.lesson,
-  }) : assert(questions.isNotEmpty, 'A session needs at least one question');
+  LessonSession({required this.mode, required this.questions, this.lesson})
+    : assert(questions.isNotEmpty, 'A session needs at least one question');
 
   final SessionMode mode;
   final List<Question> questions;
@@ -66,7 +63,10 @@ class LessonSession {
   int get correctCount => outcomes.where((o) => o.correct).length;
   int get xpEarned => outcomes.fold(0, (sum, o) => sum + o.xpAwarded);
   double get accuracy => outcomes.isEmpty ? 0 : correctCount / outcomes.length;
-  List<Question> get missed => [for (final o in outcomes) if (!o.correct) o.question];
+  List<Question> get missed => [
+    for (final o in outcomes)
+      if (!o.correct) o.question,
+  ];
 
   bool get passedQuiz => mode == SessionMode.quiz && isFinished && accuracy >= GameRules.quizPassMark;
 
@@ -113,5 +113,8 @@ class LessonResult {
 
   int get correct => outcomes.where((o) => o.correct).length;
   double get accuracy => outcomes.isEmpty ? 0 : correct / outcomes.length;
-  List<Question> get missed => [for (final o in outcomes) if (!o.correct) o.question];
+  List<Question> get missed => [
+    for (final o in outcomes)
+      if (!o.correct) o.question,
+  ];
 }

@@ -41,8 +41,8 @@ import 'package:bytestreak/widgets/app_shell.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   // go_router re-runs `redirect` whenever this notifier changes, which is how
   // signing in or out moves you to the right screen automatically.
-  final signedIn = ValueNotifier<bool>(ref.read(playerProvider) != null);
-  ref.listen(playerProvider.select((p) => p != null), (_, next) => signedIn.value = next);
+  final signedIn = ValueNotifier<bool>(ref.read(signedInProvider));
+  ref.listen(signedInProvider, (_, next) => signedIn.value = next);
   ref.onDispose(signedIn.dispose);
 
   return GoRouter(
@@ -60,9 +60,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/signup',
         pageBuilder: (c, s) => _fade(s, const SignupProfileScreen()),
-        routes: [
-          GoRoute(path: 'details', pageBuilder: (c, s) => _fade(s, const SignupDetailsScreen())),
-        ],
+        routes: [GoRoute(path: 'details', pageBuilder: (c, s) => _fade(s, const SignupDetailsScreen()))],
       ),
       GoRoute(path: '/login', pageBuilder: (c, s) => _fade(s, const LoginScreen())),
       ShellRoute(
@@ -75,11 +73,26 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: HomeScreen(focusChapterId: s.uri.queryParameters['chapter']),
             ),
           ),
-          GoRoute(path: '/achievements', pageBuilder: (c, s) => const NoTransitionPage(child: AchievementsScreen())),
-          GoRoute(path: '/leaderboard', pageBuilder: (c, s) => const NoTransitionPage(child: LeaderboardScreen())),
-          GoRoute(path: '/stats', pageBuilder: (c, s) => const NoTransitionPage(child: StatsScreen())),
-          GoRoute(path: '/settings', pageBuilder: (c, s) => const NoTransitionPage(child: SettingsScreen())),
-          GoRoute(path: '/profile', pageBuilder: (c, s) => const NoTransitionPage(child: ProfileScreen())),
+          GoRoute(
+            path: '/achievements',
+            pageBuilder: (c, s) => const NoTransitionPage(child: AchievementsScreen()),
+          ),
+          GoRoute(
+            path: '/leaderboard',
+            pageBuilder: (c, s) => const NoTransitionPage(child: LeaderboardScreen()),
+          ),
+          GoRoute(
+            path: '/stats',
+            pageBuilder: (c, s) => const NoTransitionPage(child: StatsScreen()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (c, s) => const NoTransitionPage(child: SettingsScreen()),
+          ),
+          GoRoute(
+            path: '/profile',
+            pageBuilder: (c, s) => const NoTransitionPage(child: ProfileScreen()),
+          ),
         ],
       ),
       GoRoute(

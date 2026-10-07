@@ -83,17 +83,20 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    OutlinedButton(onPressed: () => showEditProfile(context), child: const Text('Edit profile')),
-                    const SizedBox(height: 10),
-                    FilledButton.icon(
-                      onPressed: () => showSharePreview(context),
-                      icon: const Icon(Icons.ios_share_rounded, size: 18),
-                      label: const Text('Share progress'),
-                    ),
-                  ],
+                SizedBox(
+                  width: 190,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      OutlinedButton(onPressed: () => showEditProfile(context), child: const Text('Edit profile')),
+                      const SizedBox(height: 10),
+                      FilledButton.icon(
+                        onPressed: () => showSharePreview(context),
+                        icon: const Icon(Icons.ios_share_rounded, size: 18),
+                        label: const Text('Share progress'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -162,7 +165,11 @@ class ProfileScreen extends ConsumerWidget {
                             Container(
                               width: 36,
                               height: 36,
-                              decoration: BoxDecoration(color: p.surface, shape: BoxShape.circle, border: Border.all(color: p.lineSoft)),
+                              decoration: BoxDecoration(
+                                color: p.surface,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: p.lineSoft),
+                              ),
                               child: Icon(_activityIcon(a.kind), size: 18, color: _activityColor(a.kind, p)),
                             ),
                             const SizedBox(width: 12),
@@ -191,16 +198,16 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   static IconData _activityIcon(ActivityKind k) => switch (k) {
-        ActivityKind.solved => Icons.check_circle_rounded,
-        ActivityKind.badge => Icons.military_tech_rounded,
-        ActivityKind.lesson => Icons.menu_book_rounded,
-        ActivityKind.quiz => Icons.workspace_premium_rounded,
-      };
+    ActivityKind.solved => Icons.check_circle_rounded,
+    ActivityKind.badge => Icons.military_tech_rounded,
+    ActivityKind.lesson => Icons.menu_book_rounded,
+    ActivityKind.quiz => Icons.workspace_premium_rounded,
+  };
 
   static Color _activityColor(ActivityKind k, AppPalette p) => switch (k) {
-        ActivityKind.solved => p.success,
-        ActivityKind.badge => p.streak,
-        ActivityKind.lesson => p.xp,
-        ActivityKind.quiz => p.quiz,
-      };
+    ActivityKind.solved => p.success,
+    ActivityKind.badge => p.streak,
+    ActivityKind.lesson => p.xp,
+    ActivityKind.quiz => p.quiz,
+  };
 }

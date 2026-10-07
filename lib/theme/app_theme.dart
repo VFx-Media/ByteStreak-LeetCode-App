@@ -30,10 +30,7 @@ class AppTheme {
   );
 
   static ThemeData _build(AppPalette p, Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.green,
-      brightness: brightness,
-    ).copyWith(
+    final scheme = ColorScheme.fromSeed(seedColor: AppColors.green, brightness: brightness).copyWith(
       primary: p.success,
       onPrimary: Colors.white,
       primaryContainer: p.successSoft,
@@ -55,17 +52,13 @@ class AppTheme {
       outlineVariant: p.lineSoft,
     );
 
-    final text = _textTheme.apply(
-      fontFamily: 'Inter',
-      bodyColor: p.ink,
-      displayColor: p.ink,
-    );
+    final text = _textTheme.apply(fontFamily: 'Inter', bodyColor: p.ink, displayColor: p.ink);
     final buttonShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));
     const buttonPadding = EdgeInsets.symmetric(horizontal: 20, vertical: 14);
     OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: c, width: w),
-        );
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: c, width: w),
+    );
 
     return ThemeData(
       brightness: brightness,
@@ -106,9 +99,7 @@ class AppTheme {
           textStyle: text.labelLarge,
         ),
       ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(foregroundColor: p.muted),
-      ),
+      iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: p.muted)),
       cardTheme: CardThemeData(
         color: p.background,
         elevation: 0,

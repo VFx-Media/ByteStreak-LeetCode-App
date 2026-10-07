@@ -14,12 +14,7 @@ Future<void> main() async {
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     await windowManager.ensureInitialized();
     await windowManager.waitUntilReadyToShow(
-      const WindowOptions(
-        title: 'ByteStreak',
-        size: Size(1280, 800),
-        minimumSize: Size(1100, 720),
-        center: true,
-      ),
+      const WindowOptions(title: 'ByteStreak', size: Size(1280, 800), minimumSize: Size(1100, 720), center: true),
       () async {
         await windowManager.show();
         await windowManager.focus();

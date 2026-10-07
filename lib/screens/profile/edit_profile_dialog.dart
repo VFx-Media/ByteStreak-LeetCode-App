@@ -89,11 +89,7 @@ class _EditProfileDialogState extends ConsumerState<EditProfileDialog> {
               const SizedBox(height: 20),
               Text('Username', style: context.text.titleSmall),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _username,
-                validator: validateUsername,
-                onFieldSubmitted: (_) => _save(),
-              ),
+              TextFormField(controller: _username, validator: validateUsername, onFieldSubmitted: (_) => _save()),
               if (_error != null) ...[
                 const SizedBox(height: 8),
                 Text(_error!, style: context.text.bodySmall?.copyWith(color: p.heart)),

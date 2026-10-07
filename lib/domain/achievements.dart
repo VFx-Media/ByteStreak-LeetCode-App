@@ -13,12 +13,7 @@ enum AchievementCategory {
 
 /// Everything an achievement needs to measure progress.
 class AchievementContext {
-  const AchievementContext({
-    required this.player,
-    required this.path,
-    required this.now,
-    this.rank,
-  });
+  const AchievementContext({required this.player, required this.path, required this.now, this.rank});
 
   final PlayerState player;
   final CoursePath path;
@@ -113,10 +108,13 @@ List<AchievementDef> buildAchievements(CoursePath? path) {
 
   return [
     streak('first_spark', 'First Spark', 1, 'Complete your first lesson.'),
-    streak('week_warrior', 'Week Warrior', 7,
-        'Practise every day for 7 days in a row. Missing a day resets the count.'),
-    streak('fortnight', 'Fortnight', 14,
-        'Practise every day for 14 days in a row. Missing a day resets the count.'),
+    streak(
+      'week_warrior',
+      'Week Warrior',
+      7,
+      'Practise every day for 7 days in a row. Missing a day resets the count.',
+    ),
+    streak('fortnight', 'Fortnight', 14, 'Practise every day for 14 days in a row. Missing a day resets the count.'),
     streak('century_streak', 'Century', 100, 'A 100-day streak. Legendary.'),
     mastery('array_ace', 'arrays', 'Array Ace', 'grid'),
     mastery('hash_hero', 'hashing', 'Hash Hero', 'key'),
@@ -170,15 +168,14 @@ List<AchievementDef> buildAchievements(CoursePath? path) {
 
 /// Ids of achievements that are complete but not yet recorded as earned.
 List<String> newlyEarned(List<AchievementDef> defs, AchievementContext ctx) => [
-      for (final d in defs)
-        if (!ctx.player.achievements.containsKey(d.id) && d.progress(ctx) >= d.target) d.id,
-    ];
+  for (final d in defs)
+    if (!ctx.player.achievements.containsKey(d.id) && d.progress(ctx) >= d.target) d.id,
+];
 
 /// The next unearned badge in the same series, for "Next: Fortnight 12 / 14".
 AchievementDef? nextInSeries(List<AchievementDef> defs, AchievementDef def, PlayerState player) {
   if (def.series == null) return null;
-  final series = defs.where((d) => d.series == def.series).toList()
-    ..sort((a, b) => a.target.compareTo(b.target));
+  final series = defs.where((d) => d.series == def.series).toList()..sort((a, b) => a.target.compareTo(b.target));
   for (final d in series) {
     if (d.target > def.target && !player.achievements.containsKey(d.id)) return d;
   }

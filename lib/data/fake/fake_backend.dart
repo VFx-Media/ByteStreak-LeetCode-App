@@ -23,13 +23,8 @@ class _Account {
 /// Shared in-memory "database" behind all the fakes.
 class FakeBackend {
   FakeBackend({DateTime Function()? clock, CoursePath? path, this.latency = Duration.zero})
-      : _now = clock ?? DateTime.now {
-    _accounts.add(_Account(
-      userId: demoUserId,
-      email: demoEmail,
-      username: demoUsername,
-      password: demoPassword,
-    ));
+    : _now = clock ?? DateTime.now {
+    _accounts.add(_Account(userId: demoUserId, email: demoEmail, username: demoUsername, password: demoPassword));
     if (path != null) _players[demoUserId] = buildDemoPlayer(path, _now());
   }
 
@@ -48,7 +43,9 @@ class FakeBackend {
   late final players = _FakePlayers(this);
   late final settingsRepo = _FakeSettings(this);
   late final leaderboard = _FakeLeaderboard(this);
-  late final codeRunner = FakeCodeRunner(latency: latency == Duration.zero ? Duration.zero : const Duration(milliseconds: 700));
+  late final codeRunner = FakeCodeRunner(
+    latency: latency == Duration.zero ? Duration.zero : const Duration(milliseconds: 700),
+  );
 }
 
 class _FakeAuth implements AuthRepository {
@@ -125,12 +122,66 @@ class _FakeSettings implements SettingsRepository {
 }
 
 const _leaderboardNames = [
-  'aarav_k', 'meera.s', 'devq', 'sam_lin', 'nikhil', 'priya_r', 'tanmay', 'lee.w', 'zoe', 'raj99',
-  'kofi', 'ana_m', 'hiro', 'fatima.z', 'oliver', 'sofia_dev', 'kwame', 'yuki', 'mateo', 'ines',
-  'arjun.p', 'chloe', 'dmitri', 'leila', 'noah_c', 'amara', 'jonas', 'mei', 'tomas', 'aisha',
-  'felix', 'ruby', 'omar', 'sana', 'lucas', 'hana', 'ivan', 'nia', 'pedro', 'maya',
-  'ethan', 'zara', 'kai', 'lina', 'sami', 'elena', 'theo', 'rhea', 'jin', 'amir',
-  'nora', 'ben', 'isla', 'yusuf', 'lea', 'adam', 'mira', 'luca', 'tara', 'emre',
+  'aarav_k',
+  'meera.s',
+  'devq',
+  'sam_lin',
+  'nikhil',
+  'priya_r',
+  'tanmay',
+  'lee.w',
+  'zoe',
+  'raj99',
+  'kofi',
+  'ana_m',
+  'hiro',
+  'fatima.z',
+  'oliver',
+  'sofia_dev',
+  'kwame',
+  'yuki',
+  'mateo',
+  'ines',
+  'arjun.p',
+  'chloe',
+  'dmitri',
+  'leila',
+  'noah_c',
+  'amara',
+  'jonas',
+  'mei',
+  'tomas',
+  'aisha',
+  'felix',
+  'ruby',
+  'omar',
+  'sana',
+  'lucas',
+  'hana',
+  'ivan',
+  'nia',
+  'pedro',
+  'maya',
+  'ethan',
+  'zara',
+  'kai',
+  'lina',
+  'sami',
+  'elena',
+  'theo',
+  'rhea',
+  'jin',
+  'amir',
+  'nora',
+  'ben',
+  'isla',
+  'yusuf',
+  'lea',
+  'adam',
+  'mira',
+  'luca',
+  'tara',
+  'emre',
 ];
 
 /// Deterministic fake XP: the top five match the design, then it tails off.
@@ -153,15 +204,16 @@ class _FakeLeaderboard implements LeaderboardRepository {
     required bool shareStats,
   }) async {
     await _db._wait();
-    final rows = <({String id, String name, int avatar, int xp, bool me})>[
-      for (var i = 0; i < _leaderboardNames.length; i++)
-        (id: 'lb-$i', name: _leaderboardNames[i], avatar: i % 12, xp: _fakeXp(i), me: false),
-      if (shareStats) (id: userId, name: username, avatar: avatarIndex, xp: xp, me: true),
-    ]..sort((a, b) {
-        final byXp = b.xp.compareTo(a.xp);
-        if (byXp != 0) return byXp;
-        return a.me ? -1 : (b.me ? 1 : 0); // ties go to you
-      });
+    final rows =
+        <({String id, String name, int avatar, int xp, bool me})>[
+          for (var i = 0; i < _leaderboardNames.length; i++)
+            (id: 'lb-$i', name: _leaderboardNames[i], avatar: i % 12, xp: _fakeXp(i), me: false),
+          if (shareStats) (id: userId, name: username, avatar: avatarIndex, xp: xp, me: true),
+        ]..sort((a, b) {
+          final byXp = b.xp.compareTo(a.xp);
+          if (byXp != 0) return byXp;
+          return a.me ? -1 : (b.me ? 1 : 0); // ties go to you
+        });
 
     final entries = [
       for (var i = 0; i < rows.length; i++)
@@ -257,11 +309,13 @@ PlayerState buildDemoPlayer(CoursePath path, DateTime now) {
       final (q, acc) = pool[random.nextInt(pool.length)];
       // Accuracy improves a little over time, so the trend line rises.
       final drift = (139 - d) / 139 * 0.12 - 0.06;
-      answers.add(AnswerRecord(
-        questionId: q.id,
-        correct: random.nextDouble() < (acc + drift).clamp(0.05, 0.98),
-        at: day.add(Duration(hours: 18 + k % 4, minutes: random.nextInt(59))),
-      ));
+      answers.add(
+        AnswerRecord(
+          questionId: q.id,
+          correct: random.nextDouble() < (acc + drift).clamp(0.05, 0.98),
+          at: day.add(Duration(hours: 18 + k % 4, minutes: random.nextInt(59))),
+        ),
+      );
     }
   }
 

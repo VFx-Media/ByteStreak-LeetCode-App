@@ -4,10 +4,10 @@ import 'package:bytestreak/theme/app_palette.dart';
 import 'package:bytestreak/widgets/common.dart';
 
 Tone difficultyTone(Difficulty d) => switch (d) {
-      Difficulty.easy => Tone.success,
-      Difficulty.medium => Tone.streak,
-      Difficulty.hard => Tone.heart,
-    };
+  Difficulty.easy => Tone.success,
+  Difficulty.medium => Tone.streak,
+  Difficulty.hard => Tone.heart,
+};
 
 /// 1.5 Question — Multiple choice. Click an option or press 1-4 / A-D.
 class McqView extends StatelessWidget {
@@ -128,7 +128,10 @@ class _OptionTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: emphasise ? keyFill : p.line),
                     ),
-                    child: Text(letter, style: context.text.labelMedium?.copyWith(color: keyText, fontWeight: FontWeight.w700)),
+                    child: Text(
+                      letter,
+                      style: context.text.labelMedium?.copyWith(color: keyText, fontWeight: FontWeight.w700),
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(

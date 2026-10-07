@@ -59,7 +59,9 @@ class _SharePreviewDialogState extends ConsumerState<SharePreviewDialog> {
   Future<String?> _save() async {
     final location = await getSaveLocation(
       suggestedName: 'bytestreak-progress.png',
-      acceptedTypeGroups: const [XTypeGroup(label: 'PNG image', extensions: ['png'])],
+      acceptedTypeGroups: const [
+        XTypeGroup(label: 'PNG image', extensions: ['png']),
+      ],
     );
     if (location == null) return null;
     await File(location.path).writeAsBytes(await _capture());
@@ -75,10 +77,12 @@ class _SharePreviewDialogState extends ConsumerState<SharePreviewDialog> {
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}${Platform.pathSeparator}bytestreak-progress.png');
     await file.writeAsBytes(await _capture());
-    await SharePlus.instance.share(ShareParams(
-      files: [XFile(file.path, mimeType: 'image/png')],
-      text: 'My ByteStreak progress',
-    ));
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path, mimeType: 'image/png')],
+        text: 'My ByteStreak progress',
+      ),
+    );
     return null;
   }
 
@@ -163,8 +167,7 @@ class _SharePreviewDialogState extends ConsumerState<SharePreviewDialog> {
                       label: const Text('Share…'),
                     ),
                     const SizedBox(height: 14),
-                    if (_status != null)
-                      Text(_status!, style: context.text.bodySmall?.copyWith(color: p.success)),
+                    if (_status != null) Text(_status!, style: context.text.bodySmall?.copyWith(color: p.success)),
                     Text(
                       'Only shows what\'s already public on the leaderboard and your profile.',
                       style: context.text.bodySmall?.copyWith(color: p.faint),
@@ -205,21 +208,24 @@ class ShareCard extends ConsumerWidget {
     final dim = Colors.white.withValues(alpha: 0.78);
 
     Widget stat(String value, String label) => Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(12)),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(color: white, fontSize: 17, fontWeight: FontWeight.w700),
             ),
-            child: Column(
-              children: [
-                Text(value, style: const TextStyle(color: white, fontSize: 17, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(label, style: TextStyle(color: dim, fontSize: 10, fontWeight: FontWeight.w500)),
-              ],
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(color: dim, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
 
     return MediaQuery(
       data: const MediaQueryData(textScaler: TextScaler.noScaling),
@@ -246,7 +252,10 @@ class ShareCard extends ConsumerWidget {
                     children: [
                       const LogoMark(size: 30),
                       const SizedBox(width: 8),
-                      const Text('ByteStreak', style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w700)),
+                      const Text(
+                        'ByteStreak',
+                        style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w700),
+                      ),
                       const Spacer(),
                       Container(
                         decoration: BoxDecoration(
@@ -260,7 +269,10 @@ class ShareCard extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: Text('@${player.profile.username}', style: TextStyle(color: dim, fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      '@${player.profile.username}',
+                      style: TextStyle(color: dim, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
                   ),
                   const Spacer(),
                   const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFFD166), size: 44),
@@ -309,8 +321,11 @@ class _Blob extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: alpha)),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: alpha),
+    ),
+  );
 }

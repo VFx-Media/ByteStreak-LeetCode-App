@@ -58,10 +58,7 @@ class ToggleChip extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Text(
-            label,
-            style: context.text.labelMedium?.copyWith(color: selected ? p.success : p.muted),
-          ),
+          child: Text(label, style: context.text.labelMedium?.copyWith(color: selected ? p.success : p.muted)),
         ),
       ),
     );
@@ -86,12 +83,7 @@ class StepHeader extends StatelessWidget {
           width: 320,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              value: step / of,
-              minHeight: 6,
-              backgroundColor: p.sunken,
-              color: p.success,
-            ),
+            child: LinearProgressIndicator(value: step / of, minHeight: 6, backgroundColor: p.sunken, color: p.success),
           ),
         ),
         const SizedBox(height: 8),

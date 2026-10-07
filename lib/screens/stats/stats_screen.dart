@@ -30,7 +30,9 @@ class StatsScreen extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: StatTile(label: 'Skill level', value: 'Level ${s.level}', caption: s.skill, color: p.xp)),
+                Expanded(
+                  child: StatTile(label: 'Skill level', value: 'Level ${s.level}', caption: s.skill, color: p.xp),
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: StatTile(
@@ -167,9 +169,15 @@ class _StrengthsColumn extends StatelessWidget {
               children: [
                 Text('Strongest topic', style: context.text.labelMedium?.copyWith(color: p.success)),
                 const SizedBox(height: 4),
-                Text('${best.chapter.title} — ${formatPercent(best.accuracy)}', style: context.text.titleLarge?.copyWith(color: p.success)),
+                Text(
+                  '${best.chapter.title} — ${formatPercent(best.accuracy)}',
+                  style: context.text.titleLarge?.copyWith(color: p.success),
+                ),
                 const SizedBox(height: 4),
-                Text('${best.correct} of ${best.attempts} answers correct.', style: context.text.bodySmall?.copyWith(color: p.success)),
+                Text(
+                  '${best.correct} of ${best.attempts} answers correct.',
+                  style: context.text.bodySmall?.copyWith(color: p.success),
+                ),
               ],
             ),
           ),
@@ -186,7 +194,10 @@ class _StrengthsColumn extends StatelessWidget {
                 children: [
                   Text('Needs work', style: context.text.labelMedium?.copyWith(color: p.heart)),
                   const SizedBox(height: 4),
-                  Text('${worst.chapter.title} — ${formatPercent(worst.accuracy)}', style: context.text.titleLarge?.copyWith(color: p.heart)),
+                  Text(
+                    '${worst.chapter.title} — ${formatPercent(worst.accuracy)}',
+                    style: context.text.titleLarge?.copyWith(color: p.heart),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     '${worst.correct} of ${worst.attempts} correct. Revisit the chapter.',
@@ -335,7 +346,7 @@ class _TrendCard extends StatelessWidget {
                           sideTitles: SideTitles(
                             showTitles: true,
                             interval: 25,
-                            reservedSize: 36,
+                            reservedSize: 46,
                             getTitlesWidget: (v, meta) => SideTitleWidget(
                               meta: meta,
                               child: Text('${v.toInt()}%', style: context.text.labelSmall?.copyWith(color: p.faint)),
@@ -348,7 +359,10 @@ class _TrendCard extends StatelessWidget {
                           getTooltipColor: (_) => p.ink,
                           getTooltipItems: (spots) => [
                             for (final s in spots)
-                              LineTooltipItem('${s.y.toInt()}%', TextStyle(color: p.background, fontWeight: FontWeight.w600)),
+                              LineTooltipItem(
+                                '${s.y.toInt()}%',
+                                TextStyle(color: p.background, fontWeight: FontWeight.w600),
+                              ),
                           ],
                         ),
                       ),
@@ -367,7 +381,10 @@ class _TrendCard extends StatelessWidget {
                   ),
           ),
           const SizedBox(height: 8),
-          Text('Weekly accuracy, last ${PlayerStats.trendWeeks} weeks', style: context.text.bodySmall?.copyWith(color: p.faint)),
+          Text(
+            'Weekly accuracy, last ${PlayerStats.trendWeeks} weeks',
+            style: context.text.bodySmall?.copyWith(color: p.faint),
+          ),
         ],
       ),
     );

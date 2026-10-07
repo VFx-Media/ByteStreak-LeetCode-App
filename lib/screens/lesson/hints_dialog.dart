@@ -39,7 +39,9 @@ class _HintsDialogState extends ConsumerState<HintsDialog> {
 
   void _reveal() {
     final ok = ref.read(playerProvider.notifier).revealHint(widget.question, widget.mode);
-    setState(() => _message = ok ? null : 'You need ${ref.read(playerProvider.notifier).hintCost(widget.mode)} XP for a hint.');
+    setState(
+      () => _message = ok ? null : 'You need ${ref.read(playerProvider.notifier).hintCost(widget.mode)} XP for a hint.',
+    );
   }
 
   @override
@@ -110,7 +112,10 @@ class _HintsDialogState extends ConsumerState<HintsDialog> {
                         ),
                       )
                     else
-                      Text('That\'s every hint for this question.', style: context.text.bodySmall?.copyWith(color: p.faint)),
+                      Text(
+                        'That\'s every hint for this question.',
+                        style: context.text.bodySmall?.copyWith(color: p.faint),
+                      ),
                     if (_message != null) ...[
                       const SizedBox(height: 8),
                       Text(_message!, style: context.text.bodySmall?.copyWith(color: p.heart)),

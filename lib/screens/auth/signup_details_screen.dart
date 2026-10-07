@@ -109,9 +109,11 @@ class _SignupDetailsScreenState extends ConsumerState<SignupDetailsScreen> {
                       ToggleChip(
                         label: goal,
                         selected: draft.goals.contains(goal),
-                        onTap: () => edit((d) => d.copyWith(
-                              goals: d.goals.contains(goal) ? (d.goals.toSet()..remove(goal)) : {...d.goals, goal},
-                            )),
+                        onTap: () => edit(
+                          (d) => d.copyWith(
+                            goals: d.goals.contains(goal) ? (d.goals.toSet()..remove(goal)) : {...d.goals, goal},
+                          ),
+                        ),
                       ),
                   ],
                 ),

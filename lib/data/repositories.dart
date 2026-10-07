@@ -36,11 +36,7 @@ abstract interface class AuthRepository {
   /// Throws [AuthException] with a user-facing message on failure.
   Future<AuthSession> signIn({required String identifier, required String password});
 
-  Future<AuthSession> signUp({
-    required String email,
-    required String password,
-    required String username,
-  });
+  Future<AuthSession> signUp({required String email, required String password, required String username});
 
   Future<void> signOut();
   Future<void> sendPasswordReset(String identifier);

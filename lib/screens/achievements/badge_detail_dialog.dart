@@ -35,7 +35,11 @@ class BadgeDetailDialog extends ConsumerWidget {
                 children: [
                   Text('Achievement', style: context.text.labelLarge?.copyWith(color: p.muted, fontSize: 13)),
                   const Spacer(),
-                  IconButton(tooltip: 'Close (Esc)', onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded)),
+                  IconButton(
+                    tooltip: 'Close (Esc)',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
                 ],
               ),
               Padding(
@@ -51,7 +55,8 @@ class BadgeDetailDialog extends ConsumerWidget {
                       alignment: WrapAlignment.center,
                       children: [
                         Tag(def.category.label, tone: tone),
-                        if (earnedAt != null) Tag('Earned ${formatDate(earnedAt)}', tone: Tone.success, icon: Icons.check_rounded),
+                        if (earnedAt != null)
+                          Tag('Earned ${formatDate(earnedAt)}', tone: Tone.success, icon: Icons.check_rounded),
                       ],
                     ),
                     const SizedBox(height: 12),

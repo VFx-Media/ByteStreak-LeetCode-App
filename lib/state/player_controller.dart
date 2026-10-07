@@ -49,47 +49,57 @@ class PlayerController extends Notifier<PlayerState?> {
   Future<void> signIn(String identifier, String password) async {
     final session = await _services.auth.signIn(identifier: identifier, password: password);
     final loaded = await _services.players.load(session.userId);
-    state = _regen(loaded ??
-        PlayerState.fresh(Profile(
-          userId: session.userId,
-          username: identifier.contains('@') ? identifier.split('@').first : identifier,
-          email: session.email,
-          avatarIndex: 0,
-          experienceLevel: ExperienceLevel.beginner,
-          goals: const {},
-          dailyGoal: DailyGoal.regular,
-          memberSince: _now,
-        )));
+    state = _regen(
+      loaded ??
+          PlayerState.fresh(
+            Profile(
+              userId: session.userId,
+              username: identifier.contains('@') ? identifier.split('@').first : identifier,
+              email: session.email,
+              avatarIndex: 0,
+              experienceLevel: ExperienceLevel.beginner,
+              goals: const {},
+              dailyGoal: DailyGoal.regular,
+              memberSince: _now,
+            ),
+          ),
+    );
+    ref.read(signedInProvider.notifier).set(true);
   }
 
   Future<void> signUp(SignupDraft draft) async {
-    final session = await _services.auth.signUp(
-      email: draft.email,
-      password: draft.password,
-      username: draft.username,
+    final session = await _services.auth.signUp(email: draft.email, password: draft.password, username: draft.username);
+    _set(
+      PlayerState.fresh(
+        Profile(
+          userId: session.userId,
+          username: draft.username.trim(),
+          email: session.email,
+          avatarIndex: draft.avatarIndex,
+          experienceLevel: draft.experienceLevel,
+          goals: draft.goals,
+          dailyGoal: draft.dailyGoal,
+          memberSince: _now,
+        ),
+      ),
     );
-    _set(PlayerState.fresh(Profile(
-      userId: session.userId,
-      username: draft.username.trim(),
-      email: session.email,
-      avatarIndex: draft.avatarIndex,
-      experienceLevel: draft.experienceLevel,
-      goals: draft.goals,
-      dailyGoal: draft.dailyGoal,
-      memberSince: _now,
-    )));
+    ref.read(signedInProvider.notifier).set(true);
   }
 
+  /// Leaves [state] in place (see [playerProvider]); the router reacts to
+  /// [signedInProvider] and the next sign-in replaces the data.
   Future<void> signOut() async {
     await _services.auth.signOut();
-    state = null;
+    ref.read(signedInProvider.notifier).set(false);
   }
 
   void updateProfile({String? username, int? avatarIndex, DailyGoal? dailyGoal}) {
     final p = _player;
-    _set(p.copyWith(
-      profile: p.profile.copyWith(username: username, avatarIndex: avatarIndex, dailyGoal: dailyGoal),
-    ));
+    _set(
+      p.copyWith(
+        profile: p.profile.copyWith(username: username, avatarIndex: avatarIndex, dailyGoal: dailyGoal),
+      ),
+    );
   }
 
   // ---- Hearts ----------------------------------------------------------------
@@ -107,15 +117,17 @@ class PlayerController extends Notifier<PlayerState?> {
     final p = _regen(_player);
     if (p.xp < GameRules.heartRefillCost) return false;
     final now = _now;
-    _set(p.copyWith(
-      xp: p.xp - GameRules.heartRefillCost,
-      hearts: GameRules.maxHearts,
-      nextHeartAt: () => null,
-      xpEvents: [
-        ...p.xpEvents,
-        XpEvent(amount: -GameRules.heartRefillCost, reason: XpReason.heartRefill, at: now),
-      ],
-    ));
+    _set(
+      p.copyWith(
+        xp: p.xp - GameRules.heartRefillCost,
+        hearts: GameRules.maxHearts,
+        nextHeartAt: () => null,
+        xpEvents: [
+          ...p.xpEvents,
+          XpEvent(amount: -GameRules.heartRefillCost, reason: XpReason.heartRefill, at: now),
+        ],
+      ),
+    );
     return true;
   }
 
@@ -158,28 +170,35 @@ class PlayerController extends Notifier<PlayerState?> {
     final outcome = AnswerOutcome(question: q, correct: correct, xpAwarded: xp, heartLost: loseHeart);
     session.record(outcome);
 
-    _set(p.copyWith(
-      xp: p.xp + xp,
-      hearts: hearts.hearts,
-      nextHeartAt: () => hearts.nextHeartAt,
-      progress: {
-        ...p.progress,
-        q.id: progress.copyWith(
-          attempts: progress.attempts + 1,
-          correct: progress.correct + (correct ? 1 : 0),
-          lastCorrect: correct,
-          lastAttempted: now,
-        ),
-      },
-      answers: [...p.answers, AnswerRecord(questionId: q.id, correct: correct, at: now)],
-      xpEvents: xp > 0 ? [...p.xpEvents, XpEvent(amount: xp, reason: XpReason.answer, at: now)] : null,
-      correctRun: run,
-      bestCorrectRun: math.max(p.bestCorrectRun, run),
-      activity: correct && q is CodingQuestion && session.mode.awardsXp
-          ? _pushActivity(p.activity,
-              ActivityItem(kind: ActivityKind.solved, title: 'Solved ${q.prompt}', detail: '+$xp XP', at: now))
-          : null,
-    ));
+    _set(
+      p.copyWith(
+        xp: p.xp + xp,
+        hearts: hearts.hearts,
+        nextHeartAt: () => hearts.nextHeartAt,
+        progress: {
+          ...p.progress,
+          q.id: progress.copyWith(
+            attempts: progress.attempts + 1,
+            correct: progress.correct + (correct ? 1 : 0),
+            lastCorrect: correct,
+            lastAttempted: now,
+          ),
+        },
+        answers: [
+          ...p.answers,
+          AnswerRecord(questionId: q.id, correct: correct, at: now),
+        ],
+        xpEvents: xp > 0 ? [...p.xpEvents, XpEvent(amount: xp, reason: XpReason.answer, at: now)] : null,
+        correctRun: run,
+        bestCorrectRun: math.max(p.bestCorrectRun, run),
+        activity: correct && q is CodingQuestion && session.mode.awardsXp
+            ? _pushActivity(
+                p.activity,
+                ActivityItem(kind: ActivityKind.solved, title: 'Solved ${q.prompt}', detail: '+$xp XP', at: now),
+              )
+            : null,
+      ),
+    );
     return outcome;
   }
 
@@ -194,11 +213,16 @@ class PlayerController extends Notifier<PlayerState?> {
     if (progress.hintsRevealed >= q.hints.length) return false;
     final cost = hintCost(mode);
     if (p.xp < cost) return false;
-    _set(p.copyWith(
-      xp: p.xp - cost,
-      progress: {...p.progress, q.id: progress.copyWith(hintsRevealed: progress.hintsRevealed + 1)},
-      xpEvents: cost > 0 ? [...p.xpEvents, XpEvent(amount: -cost, reason: XpReason.hint, at: _now)] : null,
-    ));
+    _set(
+      p.copyWith(
+        xp: p.xp - cost,
+        progress: {
+          ...p.progress,
+          q.id: progress.copyWith(hintsRevealed: progress.hintsRevealed + 1),
+        },
+        xpEvents: cost > 0 ? [...p.xpEvents, XpEvent(amount: -cost, reason: XpReason.hint, at: _now)] : null,
+      ),
+    );
     return true;
   }
 
@@ -330,14 +354,16 @@ class PlayerController extends Notifier<PlayerState?> {
     for (final id in ids) {
       activity = _pushActivity(
         activity,
-        ActivityItem(kind: ActivityKind.badge, title: 'Earned ${byId[id]!.name}', detail: byId[id]!.category.label, at: now),
+        ActivityItem(
+          kind: ActivityKind.badge,
+          title: 'Earned ${byId[id]!.name}',
+          detail: byId[id]!.category.label,
+          at: now,
+        ),
       );
     }
     return (
-      player: p.copyWith(
-        achievements: {...p.achievements, for (final id in ids) id: now},
-        activity: activity,
-      ),
+      player: p.copyWith(achievements: {...p.achievements, for (final id in ids) id: now}, activity: activity),
       names: [for (final id in ids) byId[id]!.name],
     );
   }

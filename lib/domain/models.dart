@@ -323,12 +323,7 @@ class QuestionProgress {
 enum ActivityKind { solved, badge, lesson, quiz }
 
 class ActivityItem {
-  const ActivityItem({
-    required this.kind,
-    required this.title,
-    required this.detail,
-    required this.at,
-  });
+  const ActivityItem({required this.kind, required this.title, required this.detail, required this.at});
 
   final ActivityKind kind;
   final String title;
@@ -359,23 +354,23 @@ class PlayerState {
   });
 
   factory PlayerState.fresh(Profile profile) => PlayerState(
-        profile: profile,
-        xp: 0,
-        hearts: 5,
-        nextHeartAt: null,
-        streak: 0,
-        longestStreak: 0,
-        lastPracticeDay: null,
-        completedLessons: const {},
-        passedQuizzes: const {},
-        progress: const {},
-        answers: const [],
-        xpEvents: const [],
-        achievements: const {},
-        activity: const [],
-        correctRun: 0,
-        bestCorrectRun: 0,
-      );
+    profile: profile,
+    xp: 0,
+    hearts: 5,
+    nextHeartAt: null,
+    streak: 0,
+    longestStreak: 0,
+    lastPracticeDay: null,
+    completedLessons: const {},
+    passedQuizzes: const {},
+    progress: const {},
+    answers: const [],
+    xpEvents: const [],
+    achievements: const {},
+    activity: const [],
+    correctRun: 0,
+    bestCorrectRun: 0,
+  );
 
   final Profile profile;
   final int xp;
@@ -400,8 +395,7 @@ class PlayerState {
   final int correctRun;
   final int bestCorrectRun;
 
-  QuestionProgress progressOf(String questionId) =>
-      progress[questionId] ?? const QuestionProgress();
+  QuestionProgress progressOf(String questionId) => progress[questionId] ?? const QuestionProgress();
 
   PlayerState copyWith({
     Profile? profile,

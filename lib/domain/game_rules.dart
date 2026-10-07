@@ -138,11 +138,7 @@ class GameRules {
   }
 
   /// The streak to *display*: it drops to 0 once a whole day has been missed.
-  static int effectiveStreak({
-    required int streak,
-    required DateTime? lastPracticeDay,
-    required DateTime now,
-  }) {
+  static int effectiveStreak({required int streak, required DateTime? lastPracticeDay, required DateTime now}) {
     if (lastPracticeDay == null) return 0;
     final gap = dayOf(now).difference(dayOf(lastPracticeDay)).inDays;
     return gap <= 1 ? streak : 0;

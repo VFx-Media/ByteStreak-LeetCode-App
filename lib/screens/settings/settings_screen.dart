@@ -54,87 +54,103 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Group(title: 'Appearance', rows: [
-                _Row(
-                  title: 'Theme',
-                  subtitle: 'Auto follows your Windows setting',
-                  trailing: SegmentedButton<ThemePreference>(
-                    showSelectedIcon: false,
-                    segments: const [
-                      ButtonSegment(value: ThemePreference.light, label: Text('Light')),
-                      ButtonSegment(value: ThemePreference.dark, label: Text('Dark')),
-                      ButtonSegment(value: ThemePreference.system, label: Text('Auto')),
-                    ],
-                    selected: {s.theme},
-                    onSelectionChanged: (v) => settings.setTheme(v.first),
+              _Group(
+                title: 'Appearance',
+                rows: [
+                  _Row(
+                    title: 'Theme',
+                    subtitle: 'Auto follows your Windows setting',
+                    trailing: SegmentedButton<ThemePreference>(
+                      showSelectedIcon: false,
+                      segments: const [
+                        ButtonSegment(value: ThemePreference.light, label: Text('Light')),
+                        ButtonSegment(value: ThemePreference.dark, label: Text('Dark')),
+                        ButtonSegment(value: ThemePreference.system, label: Text('Auto')),
+                      ],
+                      selected: {s.theme},
+                      onSelectionChanged: (v) => settings.setTheme(v.first),
+                    ),
                   ),
-                ),
-                _Row(
-                  title: 'Reduce motion',
-                  subtitle: 'Turn off path and badge animations',
-                  trailing: Switch(value: s.reduceMotion, onChanged: settings.setReduceMotion),
-                ),
-              ]),
-              _Group(title: 'Learning', rows: [
-                _Row(
-                  title: 'Daily goal',
-                  subtitle: '${player.profile.dailyGoal.questions} question${player.profile.dailyGoal.questions == 1 ? '' : 's'} a day · ${player.profile.dailyGoal.time}',
-                  trailing: DropdownButton<DailyGoal>(
-                    value: player.profile.dailyGoal,
-                    underline: const SizedBox.shrink(),
-                    borderRadius: BorderRadius.circular(10),
-                    items: [
-                      for (final g in DailyGoal.values) DropdownMenuItem(value: g, child: Text(g.label)),
-                    ],
-                    onChanged: (g) {
-                      if (g != null) ref.read(playerProvider.notifier).updateProfile(dailyGoal: g);
-                    },
+                  _Row(
+                    title: 'Reduce motion',
+                    subtitle: 'Turn off path and badge animations',
+                    trailing: Switch(value: s.reduceMotion, onChanged: settings.setReduceMotion),
                   ),
-                ),
-              ]),
-              _Group(title: 'Privacy', rows: [
-                _Row(
-                  title: 'Share stats to public leaderboard',
-                  subtitle: s.shareStats ? 'Your XP and rank are visible globally' : 'You\'re hidden: no rank or league',
-                  trailing: Switch(value: s.shareStats, onChanged: settings.setShareStats),
-                ),
-              ]),
-              _Group(title: 'Notifications', rows: [
-                _Row(
-                  title: 'Daily reminder',
-                  subtitle: s.dailyReminder ? 'Nudge me at ${reminder.format(context)}' : 'Off',
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: s.dailyReminder ? () => _pickTime(context, ref, s.reminderMinutes) : null,
-                        icon: const Icon(Icons.schedule_rounded, size: 16),
-                        label: Text(reminder.format(context)),
-                      ),
-                      const SizedBox(width: 12),
-                      Switch(value: s.dailyReminder, onChanged: settings.setDailyReminder),
-                    ],
+                ],
+              ),
+              _Group(
+                title: 'Learning',
+                rows: [
+                  _Row(
+                    title: 'Daily goal',
+                    subtitle:
+                        '${player.profile.dailyGoal.questions} question${player.profile.dailyGoal.questions == 1 ? '' : 's'} a day · ${player.profile.dailyGoal.time}',
+                    trailing: DropdownButton<DailyGoal>(
+                      value: player.profile.dailyGoal,
+                      underline: const SizedBox.shrink(),
+                      borderRadius: BorderRadius.circular(10),
+                      items: [for (final g in DailyGoal.values) DropdownMenuItem(value: g, child: Text(g.label))],
+                      onChanged: (g) {
+                        if (g != null) ref.read(playerProvider.notifier).updateProfile(dailyGoal: g);
+                      },
+                    ),
                   ),
-                ),
-                _Row(
-                  title: 'Launch on system startup',
-                  subtitle: 'Open ByteStreak when you sign in to Windows',
-                  trailing: Switch(value: s.launchOnStartup, onChanged: settings.setLaunchOnStartup),
-                ),
-              ]),
-              _Group(title: 'Account', rows: [
-                _Row(
-                  title: 'Username',
-                  subtitle: player.profile.username,
-                  trailing: TextButton(onPressed: () => showEditProfile(context), child: const Text('Edit')),
-                ),
-                _Row(
-                  title: 'Log out',
-                  titleColor: p.heart,
-                  subtitle: 'Sign out on this device',
-                  trailing: OutlinedButton(onPressed: () => _logOut(context, ref), child: const Text('Log out')),
-                ),
-              ]),
+                ],
+              ),
+              _Group(
+                title: 'Privacy',
+                rows: [
+                  _Row(
+                    title: 'Share stats to public leaderboard',
+                    subtitle: s.shareStats
+                        ? 'Your XP and rank are visible globally'
+                        : 'You\'re hidden: no rank or league',
+                    trailing: Switch(value: s.shareStats, onChanged: settings.setShareStats),
+                  ),
+                ],
+              ),
+              _Group(
+                title: 'Notifications',
+                rows: [
+                  _Row(
+                    title: 'Daily reminder',
+                    subtitle: s.dailyReminder ? 'Nudge me at ${reminder.format(context)}' : 'Off',
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: s.dailyReminder ? () => _pickTime(context, ref, s.reminderMinutes) : null,
+                          icon: const Icon(Icons.schedule_rounded, size: 16),
+                          label: Text(reminder.format(context)),
+                        ),
+                        const SizedBox(width: 12),
+                        Switch(value: s.dailyReminder, onChanged: settings.setDailyReminder),
+                      ],
+                    ),
+                  ),
+                  _Row(
+                    title: 'Launch on system startup',
+                    subtitle: 'Open ByteStreak when you sign in to Windows',
+                    trailing: Switch(value: s.launchOnStartup, onChanged: settings.setLaunchOnStartup),
+                  ),
+                ],
+              ),
+              _Group(
+                title: 'Account',
+                rows: [
+                  _Row(
+                    title: 'Username',
+                    subtitle: player.profile.username,
+                    trailing: TextButton(onPressed: () => showEditProfile(context), child: const Text('Edit')),
+                  ),
+                  _Row(
+                    title: 'Log out',
+                    titleColor: p.heart,
+                    subtitle: 'Sign out on this device',
+                    trailing: OutlinedButton(onPressed: () => _logOut(context, ref), child: const Text('Log out')),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -162,10 +178,7 @@ class _Group extends StatelessWidget {
             padding: EdgeInsets.zero,
             child: Column(
               children: [
-                for (var i = 0; i < rows.length; i++) ...[
-                  if (i > 0) Divider(color: p.lineSoft),
-                  rows[i],
-                ],
+                for (var i = 0; i < rows.length; i++) ...[if (i > 0) Divider(color: p.lineSoft), rows[i]],
               ],
             ),
           ),
@@ -196,7 +209,10 @@ class _Row extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title, style: context.text.titleSmall?.copyWith(color: titleColor ?? p.ink, fontWeight: FontWeight.w500)),
+                  Text(
+                    title,
+                    style: context.text.titleSmall?.copyWith(color: titleColor ?? p.ink, fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(height: 2),
                   Text(subtitle, style: context.text.bodySmall?.copyWith(color: p.faint)),
                 ],

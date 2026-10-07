@@ -129,7 +129,11 @@ class _OutOfHeartsDialogState extends ConsumerState<OutOfHeartsDialog> {
               ),
               if (_message != null) ...[
                 const SizedBox(height: 8),
-                Text(_message!, style: context.text.bodySmall?.copyWith(color: p.heart), textAlign: TextAlign.center),
+                Text(
+                  _message!,
+                  style: context.text.bodySmall?.copyWith(color: p.heart),
+                  textAlign: TextAlign.center,
+                ),
               ],
               const SizedBox(height: 18),
               TextButton(
@@ -167,7 +171,10 @@ class _Option extends StatelessWidget {
       opacity: enabled ? 1 : 0.55,
       child: Material(
         color: p.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: p.line)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: p.line),
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
@@ -178,7 +185,11 @@ class _Option extends StatelessWidget {
                 Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(color: p.background, shape: BoxShape.circle, border: Border.all(color: p.lineSoft)),
+                  decoration: BoxDecoration(
+                    color: p.background,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: p.lineSoft),
+                  ),
                   child: Icon(icon, size: 20, color: p.muted),
                 ),
                 const SizedBox(width: 12),

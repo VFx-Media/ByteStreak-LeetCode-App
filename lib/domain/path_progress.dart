@@ -24,9 +24,7 @@ enum NodeState {
 /// * The quiz is available as soon as its chapter opens, so you can skip
 ///   lessons you already know.
 class PathProgress {
-  PathProgress(this.path, PlayerState player)
-      : _completed = player.completedLessons,
-        _passed = player.passedQuizzes {
+  PathProgress(this.path, PlayerState player) : _completed = player.completedLessons, _passed = player.passedQuizzes {
     _compute();
   }
 
@@ -49,8 +47,7 @@ class PathProgress {
   bool isChapterComplete(Chapter chapter) => _passed.contains(chapter.quiz.id);
 
   /// Lessons done in this chapter, for "Lesson 2 of 2" style labels.
-  int lessonsDone(Chapter chapter) =>
-      chapter.lessons.where((l) => _completed.contains(l.id)).length;
+  int lessonsDone(Chapter chapter) => chapter.lessons.where((l) => _completed.contains(l.id)).length;
 
   void _compute() {
     Chapter? furthestOpen;
@@ -72,8 +69,8 @@ class PathProgress {
       _states[chapter.quiz.id] = quizPassed
           ? NodeState.done
           : open
-              ? NodeState.available
-              : NodeState.locked;
+          ? NodeState.available
+          : NodeState.locked;
     }
 
     // "Current" is the first unfinished node in the furthest open chapter, so

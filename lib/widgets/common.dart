@@ -6,22 +6,22 @@ enum Tone { success, streak, heart, xp, quiz, neutral }
 
 extension ToneColors on Tone {
   Color strong(AppPalette p) => switch (this) {
-        Tone.success => p.success,
-        Tone.streak => p.streak,
-        Tone.heart => p.heart,
-        Tone.xp => p.xp,
-        Tone.quiz => p.quiz,
-        Tone.neutral => p.muted,
-      };
+    Tone.success => p.success,
+    Tone.streak => p.streak,
+    Tone.heart => p.heart,
+    Tone.xp => p.xp,
+    Tone.quiz => p.quiz,
+    Tone.neutral => p.muted,
+  };
 
   Color soft(AppPalette p) => switch (this) {
-        Tone.success => p.successSoft,
-        Tone.streak => p.streakSoft,
-        Tone.heart => p.heartSoft,
-        Tone.xp => p.xpSoft,
-        Tone.quiz => p.quizSoft,
-        Tone.neutral => p.sunken,
-      };
+    Tone.success => p.successSoft,
+    Tone.streak => p.streakSoft,
+    Tone.heart => p.heartSoft,
+    Tone.xp => p.xpSoft,
+    Tone.quiz => p.quizSoft,
+    Tone.neutral => p.sunken,
+  };
 }
 
 /// A small rounded label: "Medium", "Arrays", "+25 XP".
@@ -41,10 +41,7 @@ class Tag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 13, color: tone.strong(p)),
-            const SizedBox(width: 4),
-          ],
+          if (icon != null) ...[Icon(icon, size: 13, color: tone.strong(p)), const SizedBox(width: 4)],
           Text(label, style: context.text.labelMedium?.copyWith(color: tone.strong(p))),
         ],
       ),
@@ -160,8 +157,18 @@ class AvatarView extends StatelessWidget {
     Icons.nightlight_round,
   ];
   static const _tones = [
-    Tone.success, Tone.xp, Tone.streak, Tone.quiz, Tone.heart, Tone.streak,
-    Tone.xp, Tone.quiz, Tone.success, Tone.heart, Tone.xp, Tone.quiz,
+    Tone.success,
+    Tone.xp,
+    Tone.streak,
+    Tone.quiz,
+    Tone.heart,
+    Tone.streak,
+    Tone.xp,
+    Tone.quiz,
+    Tone.success,
+    Tone.heart,
+    Tone.xp,
+    Tone.quiz,
   ];
 
   @override
@@ -175,10 +182,7 @@ class AvatarView extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: tone.soft(p),
-        border: Border.all(
-          color: selected ? p.success : p.lineSoft,
-          width: selected ? 3 : 1,
-        ),
+        border: Border.all(color: selected ? p.success : p.lineSoft, width: selected ? 3 : 1),
       ),
       child: Icon(_icons[i], size: size * 0.46, color: tone.strong(p)),
     );
@@ -270,10 +274,7 @@ class StatTile extends StatelessWidget {
         crossAxisAlignment: align,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 20, color: color ?? p.muted),
-            const SizedBox(height: 6),
-          ],
+          if (icon != null) ...[Icon(icon, size: 20, color: color ?? p.muted), const SizedBox(height: 6)],
           if (!centered) Text(label, style: context.text.labelMedium?.copyWith(color: p.muted)),
           if (!centered) const SizedBox(height: 4),
           Text(
@@ -313,7 +314,10 @@ class CenteredPage extends StatelessWidget {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight - 80),
             child: Center(
-              child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: child),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: child,
+              ),
             ),
           ),
         ),

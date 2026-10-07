@@ -111,7 +111,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                       const SizedBox(height: 6),
                       Text('$e', style: context.text.bodySmall?.copyWith(color: p.muted)),
                       const SizedBox(height: 12),
-                      OutlinedButton(onPressed: () => ref.invalidate(leaderboardProvider), child: const Text('Try again')),
+                      OutlinedButton(
+                        onPressed: () => ref.invalidate(leaderboardProvider),
+                        child: const Text('Try again'),
+                      ),
                     ],
                   ),
                 ),
@@ -121,8 +124,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     children: [
                       for (final e in data.entries) ...[
                         if (e.rank == 1) const _TierHeader(league: League.gold, range: 'Top 10'),
-                        if (e.rank == GameRules.goldCutoff + 1) const _TierHeader(league: League.silver, range: '11–50'),
-                        if (e.rank == GameRules.silverCutoff + 1) const _TierHeader(league: League.bronze, range: '51 and below'),
+                        if (e.rank == GameRules.goldCutoff + 1)
+                          const _TierHeader(league: League.silver, range: '11–50'),
+                        if (e.rank == GameRules.silverCutoff + 1)
+                          const _TierHeader(league: League.bronze, range: '51 and below'),
                         _Row(key: e.isMe ? _meKey : null, entry: e),
                       ],
                     ],
@@ -158,18 +163,21 @@ class _Summary extends StatelessWidget {
           style: context.text.bodyMedium?.copyWith(color: p.muted),
         ),
         const SizedBox(width: 8),
-        TextButton(onPressed: onJump, child: Text('Jump to you', style: TextStyle(color: p.xp))),
+        TextButton(
+          onPressed: onJump,
+          child: Text('Jump to you', style: TextStyle(color: p.xp)),
+        ),
       ],
     );
   }
 }
 
 Color leagueColor(League league, AppPalette p) => switch (league) {
-      League.gold => p.streak,
-      League.silver => p.muted,
-      League.bronze => const Color(0xFFB07A4A),
-      League.unranked => p.faint,
-    };
+  League.gold => p.streak,
+  League.silver => p.muted,
+  League.bronze => const Color(0xFFB07A4A),
+  League.unranked => p.faint,
+};
 
 class _TierHeader extends StatelessWidget {
   const _TierHeader({required this.league, required this.range});
@@ -215,18 +223,16 @@ class _Row extends StatelessWidget {
             width: 36,
             child: Text(
               '${entry.rank}',
-              style: context.text.titleSmall?.copyWith(
-                color: league == League.gold ? p.success : p.faint,
-              ),
+              style: context.text.titleSmall?.copyWith(color: league == League.gold ? p.success : p.faint),
             ),
           ),
           AvatarView(index: entry.avatarIndex, size: 34),
           const SizedBox(width: 14),
-          Text(entry.username, style: context.text.bodyLarge?.copyWith(fontWeight: entry.isMe ? FontWeight.w700 : FontWeight.w400)),
-          if (entry.isMe) ...[
-            const SizedBox(width: 10),
-            const Tag('You', tone: Tone.success),
-          ],
+          Text(
+            entry.username,
+            style: context.text.bodyLarge?.copyWith(fontWeight: entry.isMe ? FontWeight.w700 : FontWeight.w400),
+          ),
+          if (entry.isMe) ...[const SizedBox(width: 10), const Tag('You', tone: Tone.success)],
           const Spacer(),
           Text('${formatNumber(entry.xp)} XP', style: context.text.titleSmall?.copyWith(color: p.muted)),
         ],

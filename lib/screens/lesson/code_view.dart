@@ -15,6 +15,7 @@ const _mono = 'Consolas';
 const _monoFallback = ['Cascadia Mono', 'Courier New', 'monospace'];
 
 const languageNames = {'python': 'Python 3', 'java': 'Java', 'cpp': 'C++'};
+final _highlightModes = {'python': langPython, 'java': langJava, 'cpp': langCpp};
 
 /// 1.6 Question — Code editor. Problem on the left; editor, Run/Submit and
 /// test results on the right.
@@ -59,7 +60,16 @@ class CodeView extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(flex: 5, child: _ProblemPanel(question: question, onHint: onHint, onSolution: onSolution, hintCost: hintCost, hintsLeft: hintsLeft)),
+          Expanded(
+            flex: 5,
+            child: _ProblemPanel(
+              question: question,
+              onHint: onHint,
+              onSolution: onSolution,
+              hintCost: hintCost,
+              hintsLeft: hintsLeft,
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             flex: 7,
@@ -154,7 +164,14 @@ class _ProblemPanel extends StatelessWidget {
                     for (final c in question.constraints)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 2),
-                        child: Text('•  $c', style: context.text.bodySmall?.copyWith(color: p.muted, fontFamily: _mono, fontFamilyFallback: _monoFallback)),
+                        child: Text(
+                          '•  $c',
+                          style: context.text.bodySmall?.copyWith(
+                            color: p.muted,
+                            fontFamily: _mono,
+                            fontFamilyFallback: _monoFallback,
+                          ),
+                        ),
                       ),
                   ],
                 ],
@@ -163,7 +180,9 @@ class _ProblemPanel extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: p.lineSoft))),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: p.lineSoft)),
+            ),
             child: Row(
               children: [
                 HintButton(cost: hintCost, hintsLeft: hintsLeft, onPressed: onHint),
@@ -191,10 +210,15 @@ class _MonoLine extends StatelessWidget {
     final p = context.palette;
     final style = context.text.bodyMedium?.copyWith(fontFamily: _mono, fontFamilyFallback: _monoFallback, color: p.ink);
     return Text.rich(
-      TextSpan(children: [
-        TextSpan(text: '$label ', style: style?.copyWith(fontWeight: FontWeight.w600)),
-        TextSpan(text: value, style: style),
-      ]),
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$label ',
+            style: style?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          TextSpan(text: value, style: style),
+        ],
+      ),
     );
   }
 }
@@ -295,11 +319,8 @@ class _EditorPanel extends StatelessWidget {
                   selectionColor: const Color(0x553B7DD8),
                   cursorLineColor: const Color(0x0DFFFFFF),
                   codeTheme: CodeHighlightTheme(
-                    languages: {
-                      'python': CodeHighlightThemeMode(mode: langPython),
-                      'java': CodeHighlightThemeMode(mode: langJava),
-                      'cpp': CodeHighlightThemeMode(mode: langCpp),
-                    },
+                    // Only the selected language, so the highlighter never guesses.
+                    languages: {language: CodeHighlightThemeMode(mode: _highlightModes[language] ?? langPython)},
                     theme: atomOneDarkTheme,
                   ),
                 ),
@@ -318,7 +339,10 @@ class _EditorPanel extends StatelessWidget {
             ),
           ),
           // Console
-          SizedBox(height: 210, child: _Console(run: run, running: running)),
+          SizedBox(
+            height: 210,
+            child: _Console(run: run, running: running),
+          ),
         ],
       ),
     );
@@ -337,10 +361,10 @@ class _Console extends StatelessWidget {
     final summary = running
         ? 'Running…'
         : r == null
-            ? ''
-            : r.error != null
-                ? 'Error'
-                : '${r.passed} of ${r.results.length} passed · ${r.elapsedMs} ms';
+        ? ''
+        : r.error != null
+        ? 'Error'
+        : '${r.passed} of ${r.results.length} passed · ${r.elapsedMs} ms';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -348,7 +372,9 @@ class _Console extends StatelessWidget {
         Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: p.lineSoft))),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: p.lineSoft)),
+          ),
           child: Row(
             children: [
               Text('Test results', style: context.text.titleSmall),
@@ -361,30 +387,34 @@ class _Console extends StatelessWidget {
           child: running
               ? const Center(child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2.5)))
               : r == null
-                  ? Center(
-                      child: Text(
-                        'Run your code to check it against the examples.',
-                        style: context.text.bodySmall?.copyWith(color: p.faint),
+              ? Center(
+                  child: Text(
+                    'Run your code to check it against the examples.',
+                    style: context.text.bodySmall?.copyWith(color: p.faint),
+                  ),
+                )
+              : r.error != null
+              ? Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: p.heartSoft, borderRadius: BorderRadius.circular(8)),
+                    child: Text(
+                      r.error!,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: p.heart,
+                        fontFamily: _mono,
+                        fontFamilyFallback: _monoFallback,
                       ),
-                    )
-                  : r.error != null
-                      ? Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: p.heartSoft, borderRadius: BorderRadius.circular(8)),
-                            child: Text(
-                              r.error!,
-                              style: context.text.bodyMedium?.copyWith(color: p.heart, fontFamily: _mono, fontFamilyFallback: _monoFallback),
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(14),
-                          itemCount: r.results.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 8),
-                          itemBuilder: (context, i) => _ResultRow(index: i, result: r.results[i]),
-                        ),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(14),
+                  itemCount: r.results.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (context, i) => _ResultRow(index: i, result: r.results[i]),
+                ),
         ),
       ],
     );
@@ -418,8 +448,8 @@ class _ResultRow extends StatelessWidget {
               result.passed
                   ? 'passed'
                   : result.testCase.hidden
-                      ? 'failed'
-                      : 'expected ${result.testCase.expected}, got ${result.actual}',
+                  ? 'failed'
+                  : 'expected ${result.testCase.expected}, got ${result.actual}',
               style: context.text.bodySmall?.copyWith(color: color),
               overflow: TextOverflow.ellipsis,
             ),

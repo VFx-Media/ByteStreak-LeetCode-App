@@ -38,29 +38,47 @@ class LessonCompleteScreen extends ConsumerWidget {
 
     final (IconData icon, Color accent, Color wash, String title, String subtitle) = switch (result.mode) {
       SessionMode.quiz when result.passedQuiz => (
-          Icons.workspace_premium_rounded,
-          p.quiz,
-          p.quizSoft,
-          'Quiz passed!',
-          _nextChapterLine(path.chapters, chapter),
-        ),
+        Icons.workspace_premium_rounded,
+        p.quiz,
+        p.quizSoft,
+        'Quiz passed!',
+        _nextChapterLine(path.chapters, chapter),
+      ),
       SessionMode.quiz => (
-          Icons.refresh_rounded,
-          p.heart,
-          p.heartSoft,
-          'Not quite: ${formatPercent(result.accuracy)}',
-          'You need $passMark% to pass. Review your mistakes and try again.',
-        ),
-      SessionMode.review => (Icons.task_alt_rounded, p.xp, p.xpSoft, 'Review complete', 'No hearts lost, no XP: just practice.'),
-      SessionMode.practice => (Icons.favorite_rounded, p.heart, p.heartSoft, '+1 heart earned!', 'Back to the path whenever you\'re ready.'),
-      SessionMode.replay => (Icons.replay_rounded, p.xp, p.xpSoft, 'Practice complete', '${chapter?.title ?? ''} · ${lesson?.title ?? ''}'),
+        Icons.refresh_rounded,
+        p.heart,
+        p.heartSoft,
+        'Not quite: ${formatPercent(result.accuracy)}',
+        'You need $passMark% to pass. Review your mistakes and try again.',
+      ),
+      SessionMode.review => (
+        Icons.task_alt_rounded,
+        p.xp,
+        p.xpSoft,
+        'Review complete',
+        'No hearts lost, no XP: just practice.',
+      ),
+      SessionMode.practice => (
+        Icons.favorite_rounded,
+        p.heart,
+        p.heartSoft,
+        '+1 heart earned!',
+        'Back to the path whenever you\'re ready.',
+      ),
+      SessionMode.replay => (
+        Icons.replay_rounded,
+        p.xp,
+        p.xpSoft,
+        'Practice complete',
+        '${chapter?.title ?? ''} · ${lesson?.title ?? ''}',
+      ),
       SessionMode.lesson => (
-          Icons.emoji_events_rounded,
-          p.streak,
-          p.successSoft,
-          'Lesson complete!',
-          '${chapter?.title ?? ''} · ${lesson?.title ?? ''}',
-        ),
+        Icons.emoji_events_rounded,
+        p.streak,
+        p.successSoft,
+        'Lesson complete!',
+        '${chapter?.title ?? ''} · ${lesson?.title ?? ''}',
+      ),
     };
 
     Widget badge = Container(
@@ -74,10 +92,14 @@ class LessonCompleteScreen extends ConsumerWidget {
       child: Icon(icon, size: 56, color: accent),
     );
     if (!calm && !failedQuiz) {
-      badge = badge.animate().scale(begin: const Offset(0.4, 0.4), duration: 500.ms, curve: Curves.easeOutBack).fadeIn();
+      badge = badge
+          .animate()
+          .scale(begin: const Offset(0.4, 0.4), duration: 500.ms, curve: Curves.easeOutBack)
+          .fadeIn();
     }
 
-    final canReview = result.missed.isNotEmpty &&
+    final canReview =
+        result.missed.isNotEmpty &&
         (result.mode == SessionMode.lesson || result.mode == SessionMode.quiz || result.mode == SessionMode.replay);
 
     void done() => context.go('/home');
@@ -102,7 +124,11 @@ class LessonCompleteScreen extends ConsumerWidget {
                         const SizedBox(height: 20),
                         Text(title, style: context.text.headlineLarge, textAlign: TextAlign.center),
                         const SizedBox(height: 6),
-                        Text(subtitle, style: context.text.bodyLarge?.copyWith(color: p.muted), textAlign: TextAlign.center),
+                        Text(
+                          subtitle,
+                          style: context.text.bodyLarge?.copyWith(color: p.muted),
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 24),
                         Row(
                           children: [
@@ -125,7 +151,12 @@ class LessonCompleteScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: StatTile(value: '${result.streak}', label: 'Day streak', color: p.streak, centered: true),
+                              child: StatTile(
+                                value: '${result.streak}',
+                                label: 'Day streak',
+                                color: p.streak,
+                                centered: true,
+                              ),
                             ),
                           ],
                         ),
@@ -161,7 +192,12 @@ class LessonCompleteScreen extends ConsumerWidget {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Text('Q${i + 1}', style: context.text.labelSmall?.copyWith(color: o.correct ? p.success : p.heart)),
+                                        Text(
+                                          'Q${i + 1}',
+                                          style: context.text.labelSmall?.copyWith(
+                                            color: o.correct ? p.success : p.heart,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -203,7 +239,10 @@ class LessonCompleteScreen extends ConsumerWidget {
                                     style: context.text.titleSmall?.copyWith(color: p.ink),
                                   ),
                                 ),
-                                TextButton(onPressed: () => context.go('/achievements'), child: const Text('See badges')),
+                                TextButton(
+                                  onPressed: () => context.go('/achievements'),
+                                  child: const Text('See badges'),
+                                ),
                               ],
                             ),
                           ),
@@ -216,7 +255,9 @@ class LessonCompleteScreen extends ConsumerWidget {
                                 child: OutlinedButton.icon(
                                   onPressed: () => context.go('/play/${lesson?.id ?? 'review'}?mode=review'),
                                   icon: const Icon(Icons.replay_rounded, size: 18),
-                                  label: Text('Review ${result.missed.length} mistake${result.missed.length == 1 ? '' : 's'}'),
+                                  label: Text(
+                                    'Review ${result.missed.length} mistake${result.missed.length == 1 ? '' : 's'}',
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),

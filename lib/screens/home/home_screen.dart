@@ -139,9 +139,10 @@ class _ChapterSection extends StatelessWidget {
             builder: (context, constraints) {
               final width = constraints.maxWidth;
               final reach = math.min(130.0, width / 2 - 80);
-              // Zig-zag: lessons swing to one side, the quiz sits in the middle.
+              // Zig-zag: lessons alternate left and right; the quiz sits in the
+              // middle. Alternate chapters start on opposite sides.
               Offset centre(int i) {
-                final swing = i == nodes.length - 1 ? 0.0 : math.sin((i + 0.5) * math.pi / 2.2);
+                final swing = i == nodes.length - 1 ? 0.0 : (i.isEven ? -0.7 : 0.7);
                 return Offset(width / 2 + (mirror ? -1 : 1) * swing * reach, 56 + i * _rowHeight);
               }
 
@@ -199,8 +200,8 @@ class _ChapterBanner extends StatelessWidget {
     final (tone, status, icon) = complete
         ? (Tone.success, 'Complete', Icons.check_circle_rounded)
         : unlocked
-            ? (Tone.xp, '$done of ${chapter.lessons.length} lessons', Icons.play_circle_fill_rounded)
-            : (Tone.neutral, 'Pass the ${previous?.title} quiz to unlock', Icons.lock_rounded);
+        ? (Tone.xp, '$done of ${chapter.lessons.length} lessons', Icons.play_circle_fill_rounded)
+        : (Tone.neutral, 'Pass the ${previous?.title} quiz to unlock', Icons.lock_rounded);
 
     return Container(
       width: double.infinity,
@@ -269,9 +270,9 @@ class _PathNode extends StatelessWidget {
     final Widget face = switch (state) {
       NodeState.done => Icon(Icons.check_rounded, color: accent, size: 30),
       NodeState.current => Text(
-          quiz ? 'QUIZ' : 'START',
-          style: context.text.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-        ),
+        quiz ? 'QUIZ' : 'START',
+        style: context.text.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+      ),
       NodeState.available => Icon(quiz ? Icons.star_rounded : Icons.play_arrow_rounded, color: accent, size: 30),
       NodeState.locked => Icon(Icons.lock_rounded, color: p.faint, size: 24),
     };
@@ -279,10 +280,12 @@ class _PathNode extends StatelessWidget {
     final tooltip = switch (state) {
       NodeState.done => '${lesson.title} · done. Click to replay (practice, no XP).',
       NodeState.current => '${lesson.title} · ${lesson.questions.length} questions. Click to start.',
-      NodeState.available => quiz
-          ? 'Pass with 80% to unlock the next chapter, even if you skip lessons.'
-          : '${lesson.title} · ${lesson.questions.length} questions.',
-      NodeState.locked => index == 0 ? 'Locked: finish the previous chapter first.' : 'Locked: finish the lesson before this one.',
+      NodeState.available =>
+        quiz
+            ? 'Pass with 80% to unlock the next chapter, even if you skip lessons.'
+            : '${lesson.title} · ${lesson.questions.length} questions.',
+      NodeState.locked =>
+        index == 0 ? 'Locked: finish the previous chapter first.' : 'Locked: finish the lesson before this one.',
     };
 
     Widget circle = Container(
@@ -293,9 +296,7 @@ class _PathNode extends StatelessWidget {
         color: fill,
         shape: BoxShape.circle,
         border: Border.all(color: border, width: borderWidth),
-        boxShadow: current
-            ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 18, spreadRadius: 2)]
-            : null,
+        boxShadow: current ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 18, spreadRadius: 2)] : null,
       ),
       child: face,
     );
@@ -320,11 +321,9 @@ class _PathNode extends StatelessWidget {
                   enabled: enabled,
                   child: GestureDetector(
                     onTap: enabled
-                        ? () => context.push(routeForNode(
-                              lessonId: lesson.id,
-                              isQuiz: quiz,
-                              done: state == NodeState.done,
-                            ))
+                        ? () => context.push(
+                            routeForNode(lessonId: lesson.id, isQuiz: quiz, done: state == NodeState.done),
+                          )
                         : null,
                     child: circle,
                   ),
@@ -394,17 +393,21 @@ class _MapKey extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     Widget item(Color fill, Color border, String label) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(color: fill, shape: BoxShape.circle, border: Border.all(color: border)),
-            ),
-            const SizedBox(width: 6),
-            Text(label, style: context.text.bodySmall?.copyWith(color: p.muted)),
-          ],
-        );
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: fill,
+            shape: BoxShape.circle,
+            border: Border.all(color: border),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: context.text.bodySmall?.copyWith(color: p.muted)),
+      ],
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -438,11 +441,7 @@ class _Sidebar extends StatelessWidget {
     return const SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _ContinueCard(),
-          SizedBox(height: 16),
-          _StreakCard(),
-        ],
+        children: [_ContinueCard(), SizedBox(height: 16), _StreakCard()],
       ),
     );
   }
@@ -480,7 +479,9 @@ class _ContinueCard extends ConsumerWidget {
 
     final chapter = path.chapterOfLesson(current.id)!;
     final nodesDone = chapter.nodes.where((n) => progress.stateOf(n.id) == NodeState.done).length;
-    final position = current.isQuiz ? 'Chapter quiz' : 'Lesson ${chapter.lessons.indexOf(current) + 1} of ${chapter.lessons.length}';
+    final position = current.isQuiz
+        ? 'Chapter quiz'
+        : 'Lesson ${chapter.lessons.indexOf(current) + 1} of ${chapter.lessons.length}';
 
     return AppCard(
       borderColor: p.success,
@@ -547,9 +548,18 @@ class _StreakCard extends ConsumerWidget {
             children: [
               Icon(Icons.local_fire_department_rounded, color: p.streak, size: 20),
               const SizedBox(width: 6),
-              Text('$streak day streak', style: context.text.titleMedium?.copyWith(color: p.streak)),
-              const Spacer(),
-              Text('Best: ${math.max(player.longestStreak, streak)}', style: context.text.bodySmall?.copyWith(color: p.faint)),
+              Expanded(
+                child: Text(
+                  '$streak day streak',
+                  style: context.text.titleMedium?.copyWith(color: p.streak),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Best: ${math.max(player.longestStreak, streak)}',
+                style: context.text.bodySmall?.copyWith(color: p.faint),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -570,14 +580,9 @@ class _StreakCard extends ConsumerWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: done ? p.streakSoft : p.surface,
-                          border: Border.all(
-                            color: isToday ? p.streak : p.lineSoft,
-                            width: isToday ? 2 : 1,
-                          ),
+                          border: Border.all(color: isToday ? p.streak : p.lineSoft, width: isToday ? 2 : 1),
                         ),
-                        child: done
-                            ? Icon(Icons.local_fire_department_rounded, size: 18, color: p.streak)
-                            : null,
+                        child: done ? Icon(Icons.local_fire_department_rounded, size: 18, color: p.streak) : null,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -597,8 +602,10 @@ class _StreakCard extends ConsumerWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Text('Daily goal', style: context.text.titleSmall),
-              const Spacer(),
+              Expanded(
+                child: Text('Daily goal', style: context.text.titleSmall, overflow: TextOverflow.ellipsis),
+              ),
+              const SizedBox(width: 8),
               Text(
                 '${math.min(answeredToday, goal)} / $goal questions',
                 style: context.text.labelMedium?.copyWith(color: answeredToday >= goal ? p.success : p.muted),

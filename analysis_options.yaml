@@ -26,3 +26,7 @@ linter:
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+formatter:
+  # One line width for the whole team, so `dart format` gives everyone the same result.
+  page_width: 120

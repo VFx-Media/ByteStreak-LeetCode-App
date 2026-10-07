@@ -175,10 +175,7 @@ class TopBar extends ConsumerWidget {
             child: IconButton.outlined(
               style: IconButton.styleFrom(side: BorderSide(color: p.line)),
               onPressed: () => ref.read(settingsProvider.notifier).toggleBrightness(brightness),
-              icon: Icon(
-                brightness == Brightness.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                size: 18,
-              ),
+              icon: Icon(brightness == Brightness.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded, size: 18),
             ),
           ),
           const SizedBox(width: 8),
@@ -231,13 +228,9 @@ class StreakPill extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final player = ref.watch(currentPlayerProvider);
     final now = ref.watch(clockProvider)();
-    final streak = GameRules.effectiveStreak(
-      streak: player.streak,
-      lastPracticeDay: player.lastPracticeDay,
-      now: now,
-    );
-    final doneToday = player.lastPracticeDay != null &&
-        GameRules.dayOf(player.lastPracticeDay!) == GameRules.dayOf(now);
+    final streak = GameRules.effectiveStreak(streak: player.streak, lastPracticeDay: player.lastPracticeDay, now: now);
+    final doneToday =
+        player.lastPracticeDay != null && GameRules.dayOf(player.lastPracticeDay!) == GameRules.dayOf(now);
     return _Pill(
       icon: Icons.local_fire_department_rounded,
       label: '$streak',
@@ -281,9 +274,7 @@ class _HeartsPillState extends ConsumerState<HeartsPill> {
       icon: Icons.favorite_rounded,
       label: '${player.hearts}/${GameRules.maxHearts}',
       tone: Tone.heart,
-      tooltip: next == null
-          ? 'Hearts full'
-          : 'Next heart in ${formatCountdown(next.difference(now))}',
+      tooltip: next == null ? 'Hearts full' : 'Next heart in ${formatCountdown(next.difference(now))}',
     );
   }
 }

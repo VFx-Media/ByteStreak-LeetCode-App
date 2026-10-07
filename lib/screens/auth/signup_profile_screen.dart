@@ -75,13 +75,16 @@ class _SignupProfileScreenState extends ConsumerState<SignupProfileScreen> {
   bool _saveDraft() {
     setState(() => _error = null);
     if (!_form.currentState!.validate()) return false;
-    if (_availability == _Availability.taken) return false;
-    ref.read(signupDraftProvider.notifier).update((d) => d.copyWith(
-          username: _username.text.trim(),
-          email: _email.text.trim(),
-          password: _password.text,
-          avatarIndex: _avatar,
-        ));
+    ref
+        .read(signupDraftProvider.notifier)
+        .update(
+          (d) => d.copyWith(
+            username: _username.text.trim(),
+            email: _email.text.trim(),
+            password: _password.text,
+            avatarIndex: _avatar,
+          ),
+        );
     return true;
   }
 
@@ -115,6 +118,9 @@ class _SignupProfileScreenState extends ConsumerState<SignupProfileScreen> {
             padding: const EdgeInsets.all(28),
             child: Form(
               key: _form,
+              // Re-check each field as the user types once they've touched it,
+              // so a fixed error disappears and new ones (like "taken") appear.
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -142,14 +148,11 @@ class _SignupProfileScreenState extends ConsumerState<SignupProfileScreen> {
                   TextFormField(
                     controller: _username,
                     autofocus: true,
-                    validator: validateUsername,
+                    validator: (v) =>
+                        validateUsername(v) ?? (_availability == _Availability.taken ? 'That username is taken' : null),
                     onChanged: _checkUsername,
                     textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      hintText: 'dev123',
-                      suffixIcon: _AvailabilityBadge(_availability),
-                      errorText: _availability == _Availability.taken ? 'That username is taken' : null,
-                    ),
+                    decoration: InputDecoration(hintText: 'dev123', suffixIcon: _AvailabilityBadge(_availability)),
                   ),
                   const SizedBox(height: 18),
                   _Label('Email'),

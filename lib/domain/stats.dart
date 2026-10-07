@@ -99,11 +99,7 @@ class PlayerStats {
     }
     final topics = [
       for (final c in path.chapters)
-        TopicMastery(
-          chapter: c,
-          correct: byChapter[c.id]?.correct ?? 0,
-          attempts: byChapter[c.id]?.attempts ?? 0,
-        ),
+        TopicMastery(chapter: c, correct: byChapter[c.id]?.correct ?? 0, attempts: byChapter[c.id]?.attempts ?? 0),
     ];
 
     // Heatmap: columns are weeks (Mon-Sun), the last column is this week.
@@ -137,11 +133,7 @@ class PlayerStats {
     return PlayerStats._(
       level: level,
       skill: GameRules.skillLabel(level),
-      streak: GameRules.effectiveStreak(
-        streak: player.streak,
-        lastPracticeDay: player.lastPracticeDay,
-        now: now,
-      ),
+      streak: GameRules.effectiveStreak(streak: player.streak, lastPracticeDay: player.lastPracticeDay, now: now),
       longestStreak: player.longestStreak,
       solved: firstSolved.length,
       solvedThisWeek: solvedThisWeek,
