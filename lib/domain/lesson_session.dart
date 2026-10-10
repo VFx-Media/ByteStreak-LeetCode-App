@@ -22,6 +22,9 @@ enum SessionMode {
 
   bool get costsHearts => this == lesson || this == quiz;
   bool get awardsXp => this == lesson || this == quiz;
+
+  /// Whether Lesson complete offers "Review mistakes" afterwards.
+  bool get offersReview => this == lesson || this == quiz || this == replay;
 }
 
 class AnswerOutcome {

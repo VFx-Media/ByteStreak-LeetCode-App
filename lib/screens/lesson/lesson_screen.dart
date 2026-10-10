@@ -94,7 +94,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     final q = _session?.current;
     if (q is CodingQuestion) {
       _language = q.starterCode.keys.first;
-      _code = CodeLineEditingController.fromText(q.starterCode[_language]);
+      // Tab indents by 4 spaces, matching the starter code.
+      _code = CodeLineEditingController.fromText(q.starterCode[_language], const CodeLineOptions(indentSize: 4));
     }
   }
 
@@ -290,6 +291,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                     onSolution: () => _openHints(solution: true),
                     hintCost: ref.read(playerProvider.notifier).hintCost(widget.mode),
                     hintsLeft: hintsLeft,
+                    awardsXp: widget.mode.awardsXp,
                   ),
                 },
               ),
@@ -498,7 +500,7 @@ class _FeedbackBar extends StatelessWidget {
       if (!good && q is McqQuestion)
         'Answer: ${String.fromCharCode(65 + q.correctIndex)}. ${q.options[q.correctIndex]} — ${q.solution}',
       if (good && q is McqQuestion) q.solution,
-      if (!good && q is CodingQuestion) 'It\'ll be waiting in Review mistakes at the end.',
+      if (!good && q is CodingQuestion && mode.offersReview) 'It\'ll be waiting in Review mistakes at the end.',
     ];
 
     final reward = !mode.awardsXp

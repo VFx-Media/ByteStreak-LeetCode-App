@@ -70,29 +70,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 border: Border.all(color: p.line),
               ),
               clipBehavior: Clip.antiAlias,
-              child: Stack(
+              child: Column(
                 children: [
-                  Scrollbar(
-                    controller: _scroll,
-                    child: SingleChildScrollView(
+                  Expanded(
+                    child: Scrollbar(
                       controller: _scroll,
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 110),
-                      child: Column(
-                        children: [
-                          for (final (i, chapter) in path.chapters.indexed)
-                            _ChapterSection(
-                              key: _chapterKeys.putIfAbsent(chapter.id, GlobalKey.new),
-                              chapter: chapter,
-                              previous: i == 0 ? null : path.chapters[i - 1],
-                              progress: progress,
-                              mirror: i.isOdd,
-                              calm: calm,
-                            ),
-                        ],
+                      child: SingleChildScrollView(
+                        controller: _scroll,
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            for (final (i, chapter) in path.chapters.indexed)
+                              _ChapterSection(
+                                key: _chapterKeys.putIfAbsent(chapter.id, GlobalKey.new),
+                                chapter: chapter,
+                                previous: i == 0 ? null : path.chapters[i - 1],
+                                progress: progress,
+                                mirror: i.isOdd,
+                                calm: calm,
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  const Positioned(left: 16, bottom: 16, child: _MapKey()),
+                  // A footer, not floating over the path: floating, it covered
+                  // nodes and chapter titles as they scrolled underneath.
+                  const _MapKey(),
                 ],
               ),
             ),
@@ -409,11 +413,11 @@ class _MapKey extends StatelessWidget {
       ],
     );
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: p.surface.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: p.lineSoft),
+        color: p.surface,
+        border: Border(top: BorderSide(color: p.lineSoft)),
       ),
       child: Wrap(
         spacing: 14,

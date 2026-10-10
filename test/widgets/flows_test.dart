@@ -33,6 +33,9 @@ Future<void> answerAndContinue(WidgetTester tester) async {
   await tapText(tester, next);
 }
 
+/// The "+N XP" reward tag on a coding question.
+final xpReward = RegExp(r'^\+\d+ XP$');
+
 void main() {
   group('accounts', () {
     testWidgets('sign up in two steps lands on Home with a fresh player', (tester) async {
@@ -101,6 +104,15 @@ void main() {
       expect(find.text('Continue where you left off'), findsOneWidget);
     });
 
+    testWidgets('Tab goes from the login field straight to the password, skipping "Forgot?"', (tester) async {
+      await pumpApp(tester, location: '/login', signedIn: false);
+      bool focused(int i) => tester.widget<EditableText>(find.byType(EditableText).at(i)).focusNode.hasFocus;
+      expect(focused(0), isTrue, reason: 'the first field starts focused');
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(focused(1), isTrue);
+    });
+
     testWidgets('log out from Settings returns to the welcome screen', (tester) async {
       await pumpApp(tester, location: '/settings');
       final logOut = find.widgetWithText(OutlinedButton, 'Log out');
@@ -132,11 +144,13 @@ void main() {
 
       // Coding: the untouched starter code fails, which costs a heart.
       expect(find.text('Count Leaves'), findsOneWidget);
+      expect(find.textContaining(xpReward), findsOneWidget);
       await tapText(tester, 'Run');
       expect(find.textContaining('expected 2, got None'), findsOneWidget);
       await tapText(tester, 'Submit');
       expect(find.text('0 of 2 tests passed'), findsOneWidget);
       expect(find.text('−1 heart'), findsOneWidget);
+      expect(find.textContaining('waiting in Review mistakes'), findsOneWidget);
       await tapText(tester, 'Finish');
 
       expect(find.text('Lesson complete!'), findsOneWidget);
@@ -146,12 +160,15 @@ void main() {
       expect(app.player.hearts, 3);
       expect(app.player.completedLessons, contains('trees-2'));
 
-      // Review mistakes replays only the coding question, for free.
+      // Review mistakes replays only the coding question, for free: no XP
+      // reward shown, and no "it'll be in Review mistakes" (this is it).
       await tapText(tester, 'Review 1 mistake');
       expect(find.text('Review'), findsOneWidget);
       expect(find.text('Count Leaves'), findsOneWidget);
+      expect(find.textContaining(xpReward), findsNothing);
       await tapText(tester, 'Submit');
       expect(find.text('−1 heart'), findsNothing);
+      expect(find.textContaining('waiting in Review mistakes'), findsNothing);
       await tapText(tester, 'Finish');
       expect(find.text('Review complete'), findsOneWidget);
       expect(app.player.hearts, 3);
@@ -324,6 +341,17 @@ void main() {
       await tapText(tester, 'Save');
       expect(app.player.profile.username, 'renamed_dev');
       expect(find.text('renamed_dev'), findsOneWidget);
+    });
+
+    testWidgets('edit profile: "taken" clears as soon as you change the name', (tester) async {
+      await pumpApp(tester, location: '/profile');
+      await tapText(tester, 'Edit profile');
+      await tester.enterText(find.byType(TextFormField), 'aarav_k');
+      await tapText(tester, 'Save');
+      expect(find.text('That username is taken.'), findsOneWidget);
+      await tester.enterText(find.byType(TextFormField), 'aarav_k2');
+      await tester.pump();
+      expect(find.text('That username is taken.'), findsNothing);
     });
 
     testWidgets('Stats "Practise" button jumps to that chapter on Home', (tester) async {

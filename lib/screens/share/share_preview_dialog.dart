@@ -13,6 +13,7 @@ import 'package:bytestreak/domain/game_rules.dart';
 import 'package:bytestreak/domain/share_lines.dart';
 import 'package:bytestreak/state/providers.dart';
 import 'package:bytestreak/theme/app_palette.dart';
+import 'package:bytestreak/theme/app_theme.dart';
 import 'package:bytestreak/widgets/common.dart';
 
 Future<void> showSharePreview(BuildContext context) =>
@@ -227,87 +228,92 @@ class ShareCard extends ConsumerWidget {
       ),
     );
 
+    // The image should look the same whichever theme the app is in: fixed
+    // text size, and the light palette for the avatar.
     return MediaQuery(
       data: const MediaQueryData(textScaler: TextScaler.noScaling),
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [const Color(0xFF2CB669), Color.lerp(const Color(0xFF2CB669), const Color(0xFF3B7DD8), 0.7)!],
+      child: Theme(
+        data: AppTheme.light(),
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [const Color(0xFF2CB669), Color.lerp(const Color(0xFF2CB669), const Color(0xFF3B7DD8), 0.7)!],
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(right: -60, top: 40, child: _Blob(size: 220, alpha: 0.10)),
-            Positioned(left: -80, bottom: 60, child: _Blob(size: 260, alpha: 0.08)),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(28, 92, 28, 92),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const LogoMark(size: 30),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'ByteStreak',
-                        style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      const Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 2),
+          child: Stack(
+            children: [
+              Positioned(right: -60, top: 40, child: _Blob(size: 220, alpha: 0.10)),
+              Positioned(left: -80, bottom: 60, child: _Blob(size: 260, alpha: 0.08)),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 92, 28, 92),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const LogoMark(size: 30),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'ByteStreak',
+                          style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w700),
                         ),
-                        child: AvatarView(index: player.profile.avatarIndex, size: 38),
+                        const Spacer(),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 2),
+                          ),
+                          child: AvatarView(index: player.profile.avatarIndex, size: 38),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        '@${player.profile.username}',
+                        style: TextStyle(color: dim, fontSize: 12, fontWeight: FontWeight.w600),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      '@${player.profile.username}',
+                    ),
+                    const Spacer(),
+                    const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFFD166), size: 44),
+                    Text(
+                      '$streak',
+                      style: const TextStyle(color: white, fontSize: 92, fontWeight: FontWeight.w700, height: 1),
+                    ),
+                    const Text(
+                      'day streak',
+                      style: TextStyle(color: white, fontSize: 22, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '"${shareLine(streak: streak, result: result)}"',
+                      style: TextStyle(color: dim, fontSize: 15, fontWeight: FontWeight.w500, height: 1.35),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        stat(formatNumber(player.xp), 'XP'),
+                        const SizedBox(width: 8),
+                        stat('${GameRules.levelForXp(player.xp)}', 'LEVEL'),
+                        const SizedBox(width: 8),
+                        stat(league == League.unranked ? '—' : league.label.split(' ').first, 'LEAGUE'),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      chapter == null ? 'Finished ${path.title}' : 'Now learning: ${chapter.title}',
                       style: TextStyle(color: dim, fontSize: 12, fontWeight: FontWeight.w600),
                     ),
-                  ),
-                  const Spacer(),
-                  const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFFD166), size: 44),
-                  Text(
-                    '$streak',
-                    style: const TextStyle(color: white, fontSize: 92, fontWeight: FontWeight.w700, height: 1),
-                  ),
-                  const Text(
-                    'day streak',
-                    style: TextStyle(color: white, fontSize: 22, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '"${shareLine(streak: streak, result: result)}"',
-                    style: TextStyle(color: dim, fontSize: 15, fontWeight: FontWeight.w500, height: 1.35),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      stat(formatNumber(player.xp), 'XP'),
-                      const SizedBox(width: 8),
-                      stat('${GameRules.levelForXp(player.xp)}', 'LEVEL'),
-                      const SizedBox(width: 8),
-                      stat(league == League.unranked ? '—' : league.label.split(' ').first, 'LEAGUE'),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    chapter == null ? 'Finished ${path.title}' : 'Now learning: ${chapter.title}',
-                    style: TextStyle(color: dim, fontSize: 12, fontWeight: FontWeight.w600),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

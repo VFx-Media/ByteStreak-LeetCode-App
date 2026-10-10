@@ -98,9 +98,7 @@ class LessonCompleteScreen extends ConsumerWidget {
           .fadeIn();
     }
 
-    final canReview =
-        result.missed.isNotEmpty &&
-        (result.mode == SessionMode.lesson || result.mode == SessionMode.quiz || result.mode == SessionMode.replay);
+    final canReview = result.missed.isNotEmpty && result.mode.offersReview;
 
     void done() => context.go('/home');
 

@@ -68,83 +68,98 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: AppCard(
         padding: const EdgeInsets.all(32),
         child: AutofillGroup(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Center(child: LogoMark(size: 72)),
-              const SizedBox(height: 20),
-              Text('Welcome back', style: context.text.headlineSmall, textAlign: TextAlign.center),
-              const SizedBox(height: 6),
-              Text(
-                'Your streak is waiting.',
-                style: context.text.bodyLarge?.copyWith(color: p.muted),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 28),
-              Text('Email or username', style: context.text.titleSmall),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _identifier,
-                autofocus: true,
-                autofillHints: const [AutofillHints.username, AutofillHints.email],
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(hintText: 'you@example.com'),
-              ),
-              const SizedBox(height: 18),
-              Row(
-                children: [
-                  Text('Password', style: context.text.titleSmall),
-                  const Spacer(),
-                  InkWell(
-                    onTap: _forgot,
-                    child: Text('Forgot?', style: context.text.labelMedium?.copyWith(color: p.xp)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _password,
-                obscureText: !_showPassword,
-                autofillHints: const [AutofillHints.password],
-                onSubmitted: (_) => _logIn(),
-                decoration: InputDecoration(
-                  suffixIcon: TextButton(
-                    onPressed: () => setState(() => _showPassword = !_showPassword),
-                    child: Text(_showPassword ? 'Hide' : 'Show'),
-                  ),
-                ),
-              ),
-              if (_error != null) ...[
-                const SizedBox(height: 14),
-                Text(_error!, style: context.text.bodyMedium?.copyWith(color: p.heart)),
-              ],
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: _busy ? null : _logIn,
-                child: _busy
-                    ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Log in'),
-              ),
-              if (hint != null) ...[
-                const SizedBox(height: 12),
+          // "Forgot?" sits above the password field, so in plain reading order
+          // Tab would stop on it between the two fields. Number those three;
+          // everything else follows in reading order.
+          child: FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Center(child: LogoMark(size: 72)),
+                const SizedBox(height: 20),
+                Text('Welcome back', style: context.text.headlineSmall, textAlign: TextAlign.center),
+                const SizedBox(height: 6),
                 Text(
-                  hint,
-                  style: context.text.bodySmall?.copyWith(color: p.faint),
+                  'Your streak is waiting.',
+                  style: context.text.bodyLarge?.copyWith(color: p.muted),
                   textAlign: TextAlign.center,
                 ),
-              ],
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('New here?', style: context.text.bodyMedium?.copyWith(color: p.muted)),
-                  TextButton(
-                    onPressed: () => context.go('/signup'),
-                    child: Text('Create an account', style: TextStyle(color: p.xp)),
+                const SizedBox(height: 28),
+                Text('Email or username', style: context.text.titleSmall),
+                const SizedBox(height: 8),
+                FocusTraversalOrder(
+                  order: const NumericFocusOrder(1),
+                  child: TextField(
+                    controller: _identifier,
+                    autofocus: true,
+                    autofillHints: const [AutofillHints.username, AutofillHints.email],
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(hintText: 'you@example.com'),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Text('Password', style: context.text.titleSmall),
+                    const Spacer(),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(3),
+                      child: InkWell(
+                        onTap: _forgot,
+                        child: Text('Forgot?', style: context.text.labelMedium?.copyWith(color: p.xp)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                FocusTraversalOrder(
+                  order: const NumericFocusOrder(2),
+                  child: TextField(
+                    controller: _password,
+                    obscureText: !_showPassword,
+                    autofillHints: const [AutofillHints.password],
+                    onSubmitted: (_) => _logIn(),
+                    decoration: InputDecoration(
+                      suffixIcon: TextButton(
+                        onPressed: () => setState(() => _showPassword = !_showPassword),
+                        child: Text(_showPassword ? 'Hide' : 'Show'),
+                      ),
+                    ),
+                  ),
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: 14),
+                  Text(_error!, style: context.text.bodyMedium?.copyWith(color: p.heart)),
+                ],
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: _busy ? null : _logIn,
+                  child: _busy
+                      ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text('Log in'),
+                ),
+                if (hint != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    hint,
+                    style: context.text.bodySmall?.copyWith(color: p.faint),
+                    textAlign: TextAlign.center,
                   ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('New here?', style: context.text.bodyMedium?.copyWith(color: p.muted)),
+                    TextButton(
+                      onPressed: () => context.go('/signup'),
+                      child: Text('Create an account', style: TextStyle(color: p.xp)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

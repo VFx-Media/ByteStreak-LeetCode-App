@@ -158,7 +158,8 @@ class _HintsDialogState extends ConsumerState<HintsDialog> {
                                 child: Text(
                                   widget.mode.awardsXp
                                       ? 'Viewing the solution is free, but this question will then earn 0 XP.'
-                                      : 'Viewing the solution is free.',
+                                      : 'Viewing the solution is free, but this question will then earn 0 XP '
+                                            'in lessons and quizzes.',
                                   style: context.text.bodyMedium?.copyWith(color: p.ink),
                                 ),
                               ),

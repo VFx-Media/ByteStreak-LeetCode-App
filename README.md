@@ -28,7 +28,7 @@ The backend isn't built yet, so the app runs on an **in-memory fake** (see
 ## Test it
 
 ```bash
-flutter test                                    # 117 tests: rules, state, every screen, user flows
+flutter test                                    # 120 tests: rules, state, every screen, user flows
 flutter test test/screenshots --update-goldens  # regenerate screenshots of every screen
 ```
 

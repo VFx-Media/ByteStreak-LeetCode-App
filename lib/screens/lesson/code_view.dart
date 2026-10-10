@@ -35,6 +35,7 @@ class CodeView extends StatelessWidget {
     required this.onSolution,
     required this.hintCost,
     required this.hintsLeft,
+    required this.awardsXp,
   });
 
   final CodingQuestion question;
@@ -53,6 +54,9 @@ class CodeView extends StatelessWidget {
   final int hintCost;
   final int hintsLeft;
 
+  /// False in review, practice and replays: the "+XP" tag is hidden.
+  final bool awardsXp;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -68,6 +72,7 @@ class CodeView extends StatelessWidget {
               onSolution: onSolution,
               hintCost: hintCost,
               hintsLeft: hintsLeft,
+              awardsXp: awardsXp,
             ),
           ),
           const SizedBox(width: 16),
@@ -98,6 +103,7 @@ class _ProblemPanel extends StatelessWidget {
     required this.onSolution,
     required this.hintCost,
     required this.hintsLeft,
+    required this.awardsXp,
   });
 
   final CodingQuestion question;
@@ -105,6 +111,7 @@ class _ProblemPanel extends StatelessWidget {
   final VoidCallback onSolution;
   final int hintCost;
   final int hintsLeft;
+  final bool awardsXp;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +135,7 @@ class _ProblemPanel extends StatelessWidget {
                     children: [
                       Tag(question.difficulty.label, tone: difficultyTone(question.difficulty)),
                       Tag(question.topic, tone: Tone.xp),
-                      Tag('+${question.xpReward} XP', tone: Tone.quiz),
+                      if (awardsXp) Tag('+${question.xpReward} XP', tone: Tone.quiz),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -306,6 +313,7 @@ class _EditorPanel extends StatelessWidget {
               child: CodeEditor(
                 controller: controller,
                 readOnly: locked,
+                shortcutsActivatorsBuilder: const _EditorShortcuts(),
                 wordWrap: false,
                 padding: const EdgeInsets.fromLTRB(4, 12, 12, 12),
                 style: CodeEditorStyle(
@@ -346,6 +354,23 @@ class _EditorPanel extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// The editor's default keys minus Ctrl+Enter and Ctrl+Shift+Enter. By
+/// default the editor treats those as "new line", so they never reached the
+/// lesson's Run / Submit shortcuts.
+class _EditorShortcuts extends CodeShortcutsActivatorsBuilder {
+  const _EditorShortcuts();
+
+  @override
+  List<ShortcutActivator>? build(CodeShortcutType type) {
+    final keys = const DefaultCodeShortcutsActivatorsBuilder().build(type);
+    if (type != CodeShortcutType.newLine || keys == null) return keys;
+    return [
+      for (final key in keys)
+        if (!(key is SingleActivator && key.control)) key,
+    ];
   }
 }
 
