@@ -36,6 +36,9 @@ Future<void> settle(WidgetTester tester, [int frames = 8]) async {
 }
 
 /// Starts the whole app (router, theme, fake backend) at [location].
+///
+/// [editPath] changes the course content (e.g. adds a question) and
+/// [editServices] swaps parts of the fake backend (e.g. one that fails).
 Future<TestApp> pumpApp(
   WidgetTester tester, {
   String location = '/home',
@@ -43,13 +46,17 @@ Future<TestApp> pumpApp(
   Size size = designSize,
   AppSettings settings = const AppSettings(reduceMotion: true),
   PlayerState Function(PlayerState p)? editPlayer,
+  CoursePath Function(CoursePath path)? editPath,
+  AppServices Function(AppServices services)? editServices,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
 
-  final services = AppServices.fake(clock: testClock, signedIn: signedIn, settings: settings);
-  final path = await services.content.loadPath();
+  var services = AppServices.fake(clock: testClock, signedIn: signedIn, settings: settings);
+  if (editServices != null) services = editServices(services);
+  var path = await services.content.loadPath();
+  if (editPath != null) path = editPath(path);
   var player = signedIn ? await services.players.load(demoUserId) : null;
   if (player != null && editPlayer != null) {
     player = editPlayer(player);

@@ -54,6 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
     await ref.read(servicesProvider).auth.sendPasswordReset(id);
     if (!mounted) return;
+    setState(() => _error = null);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('If an account matches "$id", a reset link is on its way.')));

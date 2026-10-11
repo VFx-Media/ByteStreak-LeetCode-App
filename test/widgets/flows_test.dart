@@ -4,12 +4,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:re_editor/re_editor.dart';
 import 'package:bytestreak/data/fake/fake_backend.dart';
+import 'package:bytestreak/data/repositories.dart';
 import 'package:bytestreak/domain/game_rules.dart';
 import 'package:bytestreak/domain/models.dart';
 import 'package:bytestreak/state/providers.dart';
 
 import '../helpers.dart';
+
+/// A leaderboard that fails until [fail] is switched off, like a server
+/// that's briefly unreachable.
+class FlakyLeaderboard implements LeaderboardRepository {
+  FlakyLeaderboard(this.real);
+  final LeaderboardRepository real;
+  var fail = true;
+
+  @override
+  Future<LeaderboardPage> fetch({
+    required String userId,
+    required String username,
+    required int avatarIndex,
+    required int xp,
+    required bool shareStats,
+  }) {
+    if (fail) return Future.error(Exception('Server unreachable'));
+    return real.fetch(userId: userId, username: username, avatarIndex: avatarIndex, xp: xp, shareStats: shareStats);
+  }
+}
 
 Future<void> tapText(WidgetTester tester, String text) async {
   final target = find.text(text).first;
@@ -102,6 +124,16 @@ void main() {
       await tester.enterText(fields.at(1), demoPassword);
       await tapText(tester, 'Log in');
       expect(find.text('Continue where you left off'), findsOneWidget);
+    });
+
+    testWidgets('"Forgot?" asks for a name first, then sends the reset link', (tester) async {
+      await pumpApp(tester, location: '/login', signedIn: false);
+      await tapText(tester, 'Forgot?');
+      expect(find.textContaining('Type your email or username first'), findsOneWidget);
+      await tester.enterText(find.byType(TextField).first, demoUsername);
+      await tapText(tester, 'Forgot?');
+      expect(find.textContaining('a reset link is on its way'), findsOneWidget);
+      expect(find.textContaining('Type your email or username first'), findsNothing, reason: 'old error cleared');
     });
 
     testWidgets('Tab goes from the login field straight to the password, skipping "Forgot?"', (tester) async {
@@ -217,11 +249,70 @@ void main() {
       await tester.pump();
       await tapText(tester, 'Check answer');
       await tapText(tester, 'Continue');
+      expect(find.text('+25 XP'), findsOneWidget);
+      expect(find.byIcon(Icons.expand_more_rounded), findsNothing, reason: 'Python only: no language menu arrow');
       await tapText(tester, 'View solution');
       expect(find.textContaining('will then earn 0 XP'), findsOneWidget);
       await tapText(tester, 'Show solution');
       expect(find.textContaining('def count_leaves'), findsOneWidget);
       expect(app.player.progressOf('tree-2-2').solutionViewed, isTrue);
+      await tester.tap(find.byTooltip('Close (Esc)'));
+      await settle(tester);
+      expect(find.text('0 XP · solution viewed'), findsOneWidget, reason: 'the reward tag follows suit');
+    });
+
+    testWidgets('the language menu swaps in that language\'s starter code', (tester) async {
+      const question = CodingQuestion(
+        id: 'poly-1-1',
+        difficulty: Difficulty.easy,
+        prompt: 'Add One',
+        hints: ['Add 1 to x.'],
+        solution: 'def add_one(x):\n    return x + 1',
+        xpReward: 15,
+        topic: 'Basics',
+        description: 'Return x + 1.',
+        examples: [],
+        constraints: [],
+        starterCode: {'python': 'def add_one(x):\n    pass', 'java': 'int addOne(int x) {\n    return 0;\n}'},
+        testCases: [TestCase(input: '1', expected: '2')],
+      );
+      const chapter = Chapter(
+        id: 'poly',
+        number: 99,
+        title: 'Languages',
+        summary: 'A question with two languages.',
+        lessons: [
+          Lesson(id: 'poly-1', chapterId: 'poly', title: 'Two languages', questions: [question]),
+        ],
+        quiz: Lesson(id: 'poly-quiz', chapterId: 'poly', title: 'Quiz', questions: [question], isQuiz: true),
+      );
+      await pumpApp(
+        tester,
+        location: '/play/poly-1?mode=replay',
+        editPath: (path) => CoursePath(title: path.title, chapters: [...path.chapters, chapter]),
+      );
+      String code() => tester.widget<CodeEditor>(find.byType(CodeEditor)).controller!.text;
+      expect(code(), contains('def add_one'));
+      expect(find.byIcon(Icons.expand_more_rounded), findsOneWidget);
+
+      await tapText(tester, 'Python 3');
+      await tapText(tester, 'Java');
+      expect(code(), contains('int addOne'));
+      expect(find.text('Java'), findsOneWidget, reason: 'the menu button now says Java');
+    });
+
+    testWidgets('the quit dialog in a replay says nothing is lost', (tester) async {
+      await pumpApp(tester, location: '/play/trees-1?mode=replay');
+      await tester.tap(find.text('A').first);
+      await tester.pump();
+      await tapText(tester, 'Check answer');
+      await tester.tap(find.byTooltip('Quit (Esc)'));
+      await settle(tester);
+      expect(find.text('Quit this lesson?'), findsOneWidget);
+      expect(find.textContaining('Nothing is lost'), findsOneWidget);
+      await tapText(tester, 'Keep going');
+      expect(find.text('Quit this lesson?'), findsNothing);
+      expect(find.text('Not quite').evaluate().isNotEmpty || find.text('Correct!').evaluate().isNotEmpty, isTrue);
     });
 
     testWidgets('quitting mid-lesson asks first', (tester) async {
@@ -277,6 +368,15 @@ void main() {
       await tapText(tester, 'Back to home');
       expect(find.text('Continue where you left off'), findsOneWidget);
     });
+
+    testWidgets('"Back to home" from the quiz intro goes home too', (tester) async {
+      await pumpApp(tester, location: '/quiz/trees-quiz', editPlayer: noHearts);
+      expect(find.textContaining('You\'re out of hearts. Earn one or refill to start.'), findsOneWidget);
+      await tapText(tester, 'Start quiz');
+      expect(find.text('You\'re out of hearts'), findsOneWidget);
+      await tapText(tester, 'Back to home');
+      expect(find.text('Continue where you left off'), findsOneWidget);
+    });
   });
 
   group('other screens', () {
@@ -316,6 +416,27 @@ void main() {
       expect(find.textContaining('You\'re #6 of'), findsOneWidget);
       expect(find.text('You'), findsOneWidget);
       expect(app.player.achievements.containsKey('gold_league'), isTrue);
+    });
+
+    testWidgets('if the leaderboard fails to load, "Try again" reloads it', (tester) async {
+      late FlakyLeaderboard board;
+      await pumpApp(
+        tester,
+        location: '/leaderboard',
+        editServices: (s) => AppServices(
+          content: s.content,
+          auth: s.auth,
+          players: s.players,
+          settings: s.settings,
+          leaderboard: board = FlakyLeaderboard(s.leaderboard),
+          codeRunner: s.codeRunner,
+        ),
+      );
+      expect(find.text('Couldn\'t load the leaderboard.'), findsOneWidget);
+      board.fail = false;
+      await tapText(tester, 'Try again');
+      expect(find.text('Couldn\'t load the leaderboard.'), findsNothing);
+      expect(find.textContaining('You\'re #6 of'), findsOneWidget);
     });
 
     testWidgets('hiding your stats removes you from the leaderboard', (tester) async {

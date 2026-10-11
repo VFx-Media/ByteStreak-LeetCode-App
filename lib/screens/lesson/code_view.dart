@@ -36,6 +36,7 @@ class CodeView extends StatelessWidget {
     required this.hintCost,
     required this.hintsLeft,
     required this.awardsXp,
+    required this.solutionViewed,
   });
 
   final CodingQuestion question;
@@ -57,6 +58,9 @@ class CodeView extends StatelessWidget {
   /// False in review, practice and replays: the "+XP" tag is hidden.
   final bool awardsXp;
 
+  /// The solution was viewed (now or earlier), so this question earns 0 XP.
+  final bool solutionViewed;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -73,6 +77,7 @@ class CodeView extends StatelessWidget {
               hintCost: hintCost,
               hintsLeft: hintsLeft,
               awardsXp: awardsXp,
+              solutionViewed: solutionViewed,
             ),
           ),
           const SizedBox(width: 16),
@@ -104,6 +109,7 @@ class _ProblemPanel extends StatelessWidget {
     required this.hintCost,
     required this.hintsLeft,
     required this.awardsXp,
+    required this.solutionViewed,
   });
 
   final CodingQuestion question;
@@ -112,6 +118,7 @@ class _ProblemPanel extends StatelessWidget {
   final int hintCost;
   final int hintsLeft;
   final bool awardsXp;
+  final bool solutionViewed;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +142,8 @@ class _ProblemPanel extends StatelessWidget {
                     children: [
                       Tag(question.difficulty.label, tone: difficultyTone(question.difficulty)),
                       Tag(question.topic, tone: Tone.xp),
-                      if (awardsXp) Tag('+${question.xpReward} XP', tone: Tone.quiz),
+                      if (awardsXp)
+                        Tag(solutionViewed ? '0 XP · solution viewed' : '+${question.xpReward} XP', tone: Tone.quiz),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -282,8 +290,11 @@ class _EditorPanel extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(languageNames[language] ?? language, style: context.text.labelMedium),
-                        const SizedBox(width: 4),
-                        Icon(Icons.expand_more_rounded, size: 16, color: p.muted),
+                        // Only an arrow when there's another language to pick.
+                        if (question.starterCode.length > 1) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.expand_more_rounded, size: 16, color: p.muted),
+                        ],
                       ],
                     ),
                   ),

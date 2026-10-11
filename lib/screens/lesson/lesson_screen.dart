@@ -201,8 +201,18 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       final leave = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Quit this lesson?'),
-          content: const Text('XP you have already earned stays, but the lesson won\'t count as finished.'),
+          title: Text(switch (widget.mode) {
+            SessionMode.quiz => 'Quit this quiz?',
+            SessionMode.practice => 'Stop practising?',
+            SessionMode.review => 'Stop reviewing?',
+            SessionMode.lesson || SessionMode.replay => 'Quit this lesson?',
+          }),
+          content: Text(switch (widget.mode) {
+            SessionMode.lesson => 'XP you have already earned stays, but the lesson won\'t count as finished.',
+            SessionMode.quiz => 'XP you have already earned stays, but the quiz won\'t count as passed.',
+            SessionMode.practice => 'You only earn the heart by finishing all ${s.questions.length} questions.',
+            SessionMode.review || SessionMode.replay => 'Nothing is lost: this mode doesn\'t use hearts or XP.',
+          }),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep going')),
             FilledButton(
@@ -292,6 +302,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                     hintCost: ref.read(playerProvider.notifier).hintCost(widget.mode),
                     hintsLeft: hintsLeft,
                     awardsXp: widget.mode.awardsXp,
+                    solutionViewed: player.progressOf(q.id).solutionViewed,
                   ),
                 },
               ),

@@ -22,6 +22,7 @@ class QuizIntroScreen extends ConsumerWidget {
       );
       if (!context.mounted) return;
       if (choice == OutOfHeartsChoice.practice) return context.go('/practice');
+      if (choice == OutOfHeartsChoice.home) return context.go('/home');
       if (choice != OutOfHeartsChoice.refilled && choice != OutOfHeartsChoice.regenerated) return;
     }
     context.pushReplacement('/play/$lessonId?mode=quiz');

@@ -125,6 +125,10 @@ final achievementDefsProvider = Provider<List<AchievementDef>>((ref) {
 });
 
 /// The global leaderboard. Re-fetched when your XP, name or privacy changes.
+///
+/// No automatic retry: Riverpod's default retries a failed load for ~40 s,
+/// showing a spinner the whole time. Offline, it's better to say so right
+/// away; the Leaderboard screen has a "Try again" button.
 final leaderboardProvider = FutureProvider<LeaderboardPage>((ref) async {
   final player = ref.watch(currentPlayerProvider);
   final shareStats = ref.watch(settingsProvider.select((s) => s.shareStats));
@@ -138,7 +142,7 @@ final leaderboardProvider = FutureProvider<LeaderboardPage>((ref) async {
         xp: player.xp,
         shareStats: shareStats,
       );
-});
+}, retry: (_, _) => null);
 
 /// Your league, from your leaderboard rank (unranked while loading).
 final leagueProvider = Provider<League>((ref) {
